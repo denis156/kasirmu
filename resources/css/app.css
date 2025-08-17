@@ -1,0 +1,110 @@
+@import 'tailwindcss';
+@plugin "daisyui";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+@plugin "daisyui" {
+    themes: slate-light --default, slate-dark --prefersdark;
+}
+
+
+@plugin "daisyui/theme" {
+  name: "slate-light";
+  default: true;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(97.647% 0.002 240);
+  --color-base-300: oklch(94.118% 0.004 240);
+  --color-base-content: oklch(15.686% 0.004 240);
+  --color-primary: oklch(59.804% 0.142 262.5);
+  --color-primary-content: oklch(100% 0.005 262.5);
+  --color-secondary: oklch(64.902% 0.061 321.4);
+  --color-secondary-content: oklch(100% 0.012 321.4);
+  --color-accent: oklch(60.588% 0.126 180);
+  --color-accent-content: oklch(100% 0.025 180);
+  --color-neutral: oklch(25.392% 0.004 240);
+  --color-neutral-content: oklch(100% 0.003 240);
+  --color-info: oklch(62.549% 0.091 220.4);
+  --color-info-content: oklch(100% 0.018 220.4);
+  --color-success: oklch(64.902% 0.106 142.5);
+  --color-success-content: oklch(100% 0.021 142.5);
+  --color-warning: oklch(74.314% 0.121 85.9);
+  --color-warning-content: oklch(100% 0.024 85.9);
+  --color-error: oklch(55.882% 0.185 27.3);
+  --color-error-content: oklch(100% 0.037 27.3);
+  --radius-selector: 1rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 1;
+}
+
+@plugin "daisyui/theme" {
+  name: "slate-dark";
+  default: false;
+  prefersdark: true;
+  color-scheme: "dark";
+  --color-base-100: oklch(15.686% 0.004 240);
+  --color-base-200: oklch(13.333% 0.003 240);
+  --color-base-300: oklch(11.765% 0.003 240);
+  --color-base-content: oklch(94.118% 0.003 240);
+  --color-primary: oklch(69.804% 0.142 262.5);
+  --color-primary-content: oklch(13.961% 0.028 262.5);
+  --color-secondary: oklch(74.902% 0.061 321.4);
+  --color-secondary-content: oklch(14.98% 0.012 321.4);
+  --color-accent: oklch(70.588% 0.126 180);
+  --color-accent-content: oklch(14.118% 0.025 180);
+  --color-neutral: oklch(20.392% 0.004 240);
+  --color-neutral-content: oklch(89.804% 0.003 240);
+  --color-info: oklch(72.549% 0.091 220.4);
+  --color-info-content: oklch(14.51% 0.018 220.4);
+  --color-success: oklch(74.902% 0.106 142.5);
+  --color-success-content: oklch(14.98% 0.021 142.5);
+  --color-warning: oklch(84.314% 0.121 85.9);
+  --color-warning-content: oklch(16.863% 0.024 85.9);
+  --color-error: oklch(65.882% 0.185 27.3);
+  --color-error-content: oklch(13.176% 0.037 27.3);
+  --radius-selector: 1rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 1;
+}
+
+@source "../../vendor/robsontenorio/mary/src/View/Components/**/*.php";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+.mary-table-pagination {
+    button, span {
+        @apply text-xs border-none
+    }
+
+    button {
+        @apply cursor-pointer
+    }
+
+    span[aria-current="page"] > span {
+        @apply bg-base-content/5
+    }
+
+    button, span[aria-current="page"] > span, span[aria-disabled="true"] span {
+        @apply py-1 px-2
+    }
+}
+
