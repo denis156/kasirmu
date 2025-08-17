@@ -1,24 +1,23 @@
 <?php
 
-// SQLite database path
-$dbPath = '/var/task/database/database.sqlite';
+declare(strict_types=1);
 
-// Check if database exists and has tables
-try {
-    $pdo = new PDO("sqlite:$dbPath");
-    $result = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
-    $tables = $result->fetchAll();
-
-    // If no tables exist, run migrations
-    if (empty($tables)) {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-
-        // Seed data if needed
-        if (class_exists('\Database\Seeders\DatabaseSeeder')) {
-            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        }
-    }
-} catch (\Exception $e) {
-    // Log error but don't fail
-    error_log('SQLite bootstrap error: ' . $e->getMessage());
+// Autoload Laravel
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require __DIR__ . '/../vendor/autoload.php';
+} else {
+    die('Vendor directory not found. Please run composer install.');
 }
+
+// Bootstrap Laravel application
+$app = require_once __DIR__ . '/../bootstrap/app.php';
+
+// Handle the request
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+
+$request = Illuminate\Http\Request::capture();
+$response = $kernel->handle($request);
+
+$response->send();
+
+$kernel->terminate($request, $response);
