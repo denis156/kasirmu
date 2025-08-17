@@ -182,7 +182,7 @@
 
                     <div class="bg-base-100/80 backdrop-blur-sm rounded-3xl p-6 md:p-8 border border-secondary/20 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="text-3xl md:text-4xl font-black text-secondary">{{ number_format(\DB::table('users')->where('is_active', true)->count()) }}+</div>
+                            <div class="text-3xl md:text-4xl font-black text-secondary">{{ number_format(\DB::table('users')->whereNotNull('email_verified_at')->count()) }}+</div>
                             <x-icon name="phosphor.users" class="w-10 h-10 text-secondary/50" />
                         </div>
                         <div class="text-base md:text-lg text-base-content/70 font-medium">Pengguna Aktif</div>

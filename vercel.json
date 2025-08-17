@@ -1,19 +1,19 @@
 {
     "version": 2,
-    "framework": null,
-    "functions": {
-        "api/index.php": {
-            "runtime": "vercel-php@0.6.0"
+    "builds": [
+        {
+            "src": "api/index.php",
+            "use": "vercel-php@0.6.0"
         }
-    },
+    ],
     "routes": [
         { "src": "/build/(.*)", "dest": "/public/build/$1" },
         { "src": "/(.*)", "dest": "/api/index.php" }
     ],
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "false",
-        "APP_URL": "https://kasirmu.vercel.app",
+        "APP_DEBUG": "true",
+        "APP_URL": "https://kasirmu-ocu9gp4vm-denis156s-projects.vercel.app",
         "APP_KEY": "base64:HR2m/86w7kfwnUqcz61DYVQ8HbXt5NlpO7dv/mD2+1s=",
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
@@ -24,8 +24,9 @@
         "CACHE_DRIVER": "array",
         "LOG_CHANNEL": "stderr",
         "SESSION_DRIVER": "cookie",
-        "DB_CONNECTION": "mysql",
-        "ASSET_URL": "https://kasirmu.vercel.app",
-        "DB_URL": "mysql://kasirmu_positiongo:0296accd498b24e13011d20454d85a53c848b054@igrdeb.h.filess.io:3307/kasirmu_positiongo"
+        "QUEUE_CONNECTION": "sync",
+        "DB_CONNECTION": "sqlite",
+        "DB_DATABASE": "/var/task/database/database.sqlite",
+        "ASSET_URL": "https://kasirmu-ocu9gp4vm-denis156s-projects.vercel.app"
     }
 }
