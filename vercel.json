@@ -2,20 +2,19 @@
     "version": 2,
     "framework": null,
     "functions": {
-        "api/index.php": { "runtime": "vercel-php@0.6.0" }
+        "api/index.php": {
+            "runtime": "vercel-php@0.6.0"
+        }
     },
     "routes": [
-        { "src": "/build/(.*)", "dest": "/public/build/" },
+        { "src": "/build/(.*)", "dest": "/public/build/$1" },
         { "src": "/(.*)", "dest": "/api/index.php" }
     ],
-    "public": true,
-    "buildCommand": "vite build",
-    "outputDirectory": "public",
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "true",
-        "APP_URL": "https://your_vercel_domain.vercel.app",
-        "APP_KEY": "base64:smyMotQ0KujczQN6kIIeNOEE6SlnvTOlPpTsGEIL07U=",
+        "APP_DEBUG": "false",
+        "APP_URL": "https://kasirmu.vercel.app",
+        "APP_KEY": "base64:HR2m/86w7kfwnUqcz61DYVQ8HbXt5NlpO7dv/mD2+1s=",
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
         "APP_PACKAGES_CACHE": "/tmp/packages.php",
@@ -25,8 +24,8 @@
         "CACHE_DRIVER": "array",
         "LOG_CHANNEL": "stderr",
         "SESSION_DRIVER": "cookie",
-        "DB_CONNECTION":"pgsql",
-        "ASSET_URL":"https://your_vercel_domain.vercel.app",
-        "DB_URL":"YOUR_DB_URL"
+        "DB_CONNECTION": "mysql",
+        "ASSET_URL": "https://kasirmu.vercel.app",
+        "DB_URL": "mysql://kasirmu_positiongo:0296accd498b24e13011d20454d85a53c848b054@igrdeb.h.filess.io:3307/kasirmu_positiongo"
     }
 }
