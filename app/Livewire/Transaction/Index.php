@@ -122,7 +122,7 @@ class Index extends Component
 
         // Format data
         $items = $items->map(function ($item) {
-            $item->total_amount_formatted = 'Rp ' . number_format($item->total_amount, 0, ',', '.');
+            $item->total_amount_formatted = 'Rp ' . number_format($item->total_amount, 2, ',', '.');
             $item->transaction_date_formatted = \Carbon\Carbon::parse($item->transaction_date)->format('d/m/Y H:i');
             return $item;
         });
