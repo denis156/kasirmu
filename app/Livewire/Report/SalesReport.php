@@ -135,7 +135,7 @@ class SalesReport extends Component
     public function loadSalesChart()
     {
         $salesData = $this->dailySales();
-        
+
         $labels = [];
         $data = [];
 

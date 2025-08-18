@@ -1,7 +1,7 @@
 <div>
     <!-- HEADER -->
-    <x-header title="Laporan Stok" subtitle="Analisis dan monitoring inventory toko • Beta Version - Sedang dikembangkan" icon="phosphor.package"
-        icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator progress-indicator>
+    <x-header title="Laporan Stok" subtitle="Analisis dan monitoring inventory toko • Beta Version - Sedang dikembangkan"
+        icon="phosphor.package" icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator progress-indicator>
         <x-slot:actions>
             <x-button label="Export PDF" icon="phosphor.file-pdf" class="btn-error btn-sm"
                 tooltip="Sedang dalam pengembangan" responsive />
@@ -10,63 +10,49 @@
         </x-slot:actions>
     </x-header>
 
+    <!-- SUMMARY STATISTICS -->
+    <x-card title="Ringkasan Stok" subtitle="Status inventory dan nilai stok saat ini" shadow
+        class="bg-base-100 border border-base-content/10 shadow-sm shadow-primary mt-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            <x-stat title="Total Produk" description="Produk aktif dalam sistem"
+                value="{{ number_format($this->stockSummary()['total_products']) }}" icon="phosphor.package"
+                class="bg-info/10 text-info border border-info/20 shadow-sm shadow-info" />
+
+            <x-stat title="Stok Menipis" description="Produk perlu restock"
+                value="{{ number_format($this->stockSummary()['low_stock_count']) }}" icon="phosphor.warning"
+                class="bg-warning/10 text-warning border border-warning/20 shadow-sm shadow-warning" />
+
+            <x-stat title="Stok Habis" description="Produk kehabisan stok"
+                value="{{ number_format($this->stockSummary()['out_of_stock_count']) }}" icon="phosphor.x-circle"
+                class="bg-error/10 text-error border border-error/20 shadow-sm shadow-error" />
+
+            <x-stat title="Nilai Stok" description="Total nilai inventory"
+                value="Rp {{ number_format($this->stockSummary()['total_stock_value'], 0, ',', '.') }}"
+                icon="phosphor.currency-circle-dollar"
+                class="bg-success/10 text-success border border-success/20 shadow-sm shadow-success" />
+        </div>
+    </x-card>
+
     <!-- FILTERS -->
     <x-card title="Filter Produk" subtitle="Filter berdasarkan status stok dan kategori" shadow
         class="bg-base-100 border border-base-content/10 shadow-sm shadow-primary mt-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-                <x-input label="Pencarian" wire:model.live.debounce="search"
-                    placeholder="Nama produk atau SKU..." icon="phosphor.magnifying-glass" />
+                <x-input label="Pencarian" wire:model.live.debounce="search" placeholder="Nama produk atau SKU..."
+                    icon="phosphor.magnifying-glass" />
             </div>
             <div>
-                <x-select label="Status Stok" wire:model.live="filterStatus"
-                    :options="$this->getStatusOptions()"
-                    option-value="id" option-label="name" icon="phosphor.warning" />
+                <x-select label="Status Stok" wire:model.live="filterStatus" :options="$this->getStatusOptions()" option-value="id"
+                    option-label="name" icon="phosphor.warning" />
             </div>
             <div>
-                <x-select label="Kategori" wire:model.live="filterCategory"
-                    :options="$this->categories()->toArray()"
-                    option-value="id" option-label="name"
-                    placeholder="Semua kategori" icon="phosphor.tag" />
+                <x-select label="Kategori" wire:model.live="filterCategory" :options="$this->categories()->toArray()" option-value="id"
+                    option-label="name" placeholder="Semua kategori" icon="phosphor.tag" />
             </div>
             <div class="flex items-end">
                 <x-button label="Reset Filter" icon="phosphor.x" class="btn-outline w-full"
                     wire:click="$set('filterStatus', ''); $set('filterCategory', ''); $set('search', '')" />
             </div>
-        </div>
-    </x-card>
-
-    <!-- SUMMARY STATISTICS -->
-    <x-card title="Ringkasan Stok" subtitle="Status inventory dan nilai stok saat ini" shadow
-        class="bg-base-100 border border-base-content/10 shadow-sm shadow-primary mt-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            <x-stat
-                title="Total Produk"
-                description="Produk aktif dalam sistem"
-                value="{{ number_format($this->stockSummary()['total_products']) }}"
-                icon="phosphor.package"
-                class="bg-info/10 text-info border border-info/20 shadow-sm shadow-info" />
-
-            <x-stat
-                title="Stok Menipis"
-                description="Produk perlu restock"
-                value="{{ number_format($this->stockSummary()['low_stock_count']) }}"
-                icon="phosphor.warning"
-                class="bg-warning/10 text-warning border border-warning/20 shadow-sm shadow-warning" />
-
-            <x-stat
-                title="Stok Habis"
-                description="Produk kehabisan stok"
-                value="{{ number_format($this->stockSummary()['out_of_stock_count']) }}"
-                icon="phosphor.x-circle"
-                class="bg-error/10 text-error border border-error/20 shadow-sm shadow-error" />
-
-            <x-stat
-                title="Nilai Stok"
-                description="Total nilai inventory"
-                value="Rp {{ number_format($this->stockSummary()['total_stock_value'], 0, ',', '.') }}"
-                icon="phosphor.currency-circle-dollar"
-                class="bg-success/10 text-success border border-success/20 shadow-sm shadow-success" />
         </div>
     </x-card>
 
@@ -84,10 +70,11 @@
         <div class="xl:col-span-2">
             <x-card title="Alert Stok Menipis" subtitle="Produk yang perlu segera direstock" shadow
                 class="bg-base-100 border border-base-content/10 shadow-sm shadow-primary h-full">
-                @if($this->lowStockProducts()->count() > 0)
+                @if ($this->lowStockProducts()->count() > 0)
                     <div class="space-y-3 max-h-80 overflow-y-auto">
-                        @foreach($this->lowStockProducts() as $product)
-                            <div class="flex items-center justify-between p-3 bg-warning/10 border border-warning/20 rounded-lg">
+                        @foreach ($this->lowStockProducts() as $product)
+                            <div
+                                class="flex items-center justify-between p-3 bg-warning/10 border border-warning/20 rounded-lg">
                                 <div class="flex-1">
                                     <h4 class="font-medium text-base-content">{{ $product->name }}</h4>
                                     <p class="text-sm text-base-content/60">SKU: {{ $product->sku }}</p>
@@ -116,7 +103,7 @@
         <!-- STOCK MOVEMENT TABLE -->
         <x-card title="Pergerakan Stok" subtitle="Produk terlaris 30 hari terakhir" shadow
             class="bg-base-100 border border-base-content/10 shadow-sm shadow-primary">
-            @if($this->stockMovement()->count() > 0)
+            @if ($this->stockMovement()->count() > 0)
                 <div class="overflow-x-auto">
                     <table class="table table-zebra table-sm">
                         <thead>
@@ -127,14 +114,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($this->stockMovement() as $product)
+                            @foreach ($this->stockMovement() as $product)
                                 <tr>
                                     <td>
                                         <div class="font-medium">{{ $product->name }}</div>
                                         <div class="text-xs text-base-content/60">{{ $product->category_name }}</div>
                                     </td>
                                     <td class="text-center">
-                                        @if($product->stock <= $product->min_stock)
+                                        @if ($product->stock <= $product->min_stock)
                                             <x-badge value="{{ $product->stock }}" class="badge-warning badge-sm" />
                                         @else
                                             <x-badge value="{{ $product->stock }}" class="badge-success badge-sm" />
@@ -160,7 +147,7 @@
         <!-- ALL PRODUCTS TABLE (FILTERED) -->
         <x-card title="Daftar Produk" subtitle="Produk berdasarkan filter yang dipilih" shadow
             class="bg-base-100 border border-base-content/10 shadow-sm shadow-primary">
-            @if($this->products()->count() > 0)
+            @if ($this->products()->count() > 0)
                 <div class="overflow-x-auto max-h-96 overflow-y-auto">
                     <table class="table table-zebra table-sm">
                         <thead class="sticky top-0 bg-base-200">
@@ -171,7 +158,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($this->products() as $product)
+                            @foreach ($this->products() as $product)
                                 <tr>
                                     <td>
                                         <div class="font-medium">{{ $product->name }}</div>
@@ -179,7 +166,7 @@
                                         <div class="text-xs text-base-content/60">{{ $product->category_name }}</div>
                                     </td>
                                     <td class="text-center">
-                                        @if($product->stock_status === 'out_of_stock')
+                                        @if ($product->stock_status === 'out_of_stock')
                                             <x-badge value="0" class="badge-error badge-sm" />
                                         @elseif($product->stock_status === 'low_stock')
                                             <x-badge value="{{ $product->stock }}" class="badge-warning badge-sm" />

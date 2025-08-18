@@ -40,17 +40,17 @@ class StockReport extends Component
     public function stockSummary()
     {
         $totalProducts = DB::table('products')->where('is_active', true)->count();
-        
+
         $lowStockCount = DB::table('products')
             ->where('is_active', true)
             ->whereRaw('stock <= min_stock')
             ->count();
-        
+
         $outOfStockCount = DB::table('products')
             ->where('is_active', true)
             ->where('stock', 0)
             ->count();
-        
+
         $totalStockValue = DB::table('products')
             ->where('is_active', true)
             ->selectRaw('SUM(stock * price) as total_value')
@@ -93,7 +93,7 @@ class StockReport extends Component
                 'products.*',
                 DB::raw('COALESCE(categories.name, "Tanpa Kategori") as category_name'),
                 DB::raw('(products.stock * products.price) as stock_value'),
-                DB::raw('CASE 
+                DB::raw('CASE
                     WHEN products.stock = 0 THEN "out_of_stock"
                     WHEN products.stock <= products.min_stock THEN "low_stock"
                     WHEN products.stock > (products.min_stock * 3) THEN "overstock"
@@ -104,9 +104,9 @@ class StockReport extends Component
 
         // Apply search filter
         if ($this->search) {
-            $query->where(function($q) {
+            $query->where(function ($q) {
                 $q->where('products.name', 'like', '%' . $this->search . '%')
-                  ->orWhere('products.sku', 'like', '%' . $this->search . '%');
+                    ->orWhere('products.sku', 'like', '%' . $this->search . '%');
             });
         }
 
@@ -120,7 +120,7 @@ class StockReport extends Component
             switch ($this->filterStatus) {
                 case 'low_stock':
                     $query->whereRaw('products.stock <= products.min_stock')
-                          ->where('products.stock', '>', 0);
+                        ->where('products.stock', '>', 0);
                     break;
                 case 'out_of_stock':
                     $query->where('products.stock', 0);

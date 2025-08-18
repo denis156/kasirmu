@@ -74,7 +74,7 @@ class CashierReport extends Component
     public function summaryStats()
     {
         $totalCashiers = DB::table('users')->where('is_active', true)->count();
-        
+
         $activeCashiers = DB::table('transactions')
             ->join('users', 'transactions.user_id', '=', 'users.id')
             ->where('transactions.status', 'completed')
@@ -197,7 +197,7 @@ class CashierReport extends Component
                 'transactions.*',
                 'users.name as cashier_name'
             )
-            ->when($this->selectedCashier, function($query) {
+            ->when($this->selectedCashier, function ($query) {
                 return $query->where('users.id', $this->selectedCashier);
             })
             ->orderBy('transactions.transaction_date', 'desc')
@@ -215,7 +215,7 @@ class CashierReport extends Component
     public function loadPerformanceChart()
     {
         $performanceData = $this->cashierPerformance();
-        
+
         $labels = $performanceData->pluck('name')->toArray();
         $salesData = $performanceData->pluck('total_sales')->map(fn($amount) => (float) $amount)->toArray();
         $transactionData = $performanceData->pluck('total_transactions')->map(fn($count) => (int) $count)->toArray();
@@ -269,10 +269,10 @@ class CashierReport extends Component
     public function loadTransactionChart()
     {
         $dailyData = $this->dailyPerformance();
-        
+
         // Group by date
         $groupedData = $dailyData->groupBy('date');
-        
+
         $labels = $groupedData->keys()->map(fn($date) => Carbon::parse($date)->format('M j'))->toArray();
         $totalSales = $groupedData->map(fn($group) => $group->sum('daily_sales'))->values()->toArray();
         $totalTransactions = $groupedData->map(fn($group) => $group->sum('transaction_count'))->values()->toArray();
