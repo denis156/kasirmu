@@ -1,7 +1,7 @@
 <div>
     <!-- HEADER -->
     <x-header title="Daftar Pengguna" subtitle="Kelola pengguna di halaman ini" icon="phosphor.users-four"
-        icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator progress-indicator>
+        icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator>
         <x-slot:middle class="!justify-end">
             <x-input class="input-sm input-primary" placeholder="Search..." wire:model.live.debounce="search" clearable
                 icon="phosphor.magnifying-glass" />

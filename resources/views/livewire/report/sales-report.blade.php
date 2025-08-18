@@ -2,7 +2,7 @@
     <!-- HEADER -->
     <x-header title="Laporan Penjualan"
         subtitle="Analisis dan statistik penjualan toko • Beta Version - Sedang dikembangkan" icon="phosphor.chart-line"
-        icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator progress-indicator>
+        icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator>
         <x-slot:actions>
             <x-button label="Export PDF" icon="phosphor.file-pdf" class="btn-error btn-sm"
                 tooltip="Sedang dalam pengembangan" responsive />
@@ -16,7 +16,7 @@
         class="bg-base-100 border border-base-content/10 shadow-sm shadow-primary mt-6">
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             <x-stat title="Total Penjualan" description="Pendapatan periode ini"
-                value="Rp {{ number_format($this->summaryStats()['total_sales'], 0, ',', '.') }}"
+                value="Rp {{ number_format($this->summaryStats()['total_sales'], 2, ',', '.') }}"
                 icon="phosphor.currency-circle-dollar"
                 class="bg-success/10 text-success border border-success/20 shadow-sm shadow-success" />
 
@@ -25,7 +25,7 @@
                 class="bg-info/10 text-info border border-info/20 shadow-sm shadow-info" />
 
             <x-stat title="Rata-rata Transaksi" description="Nilai rata-rata per transaksi"
-                value="Rp {{ number_format($this->summaryStats()['avg_transaction'], 0, ',', '.') }}"
+                value="Rp {{ number_format($this->summaryStats()['avg_transaction'], 2, ',', '.') }}"
                 icon="phosphor.chart-line"
                 class="bg-primary/10 text-primary border border-primary/20 shadow-sm shadow-primary" />
 
@@ -112,7 +112,7 @@
                                         <x-badge value="{{ number_format($product->total_qty) }}" class="badge-info" />
                                     </td>
                                     <td class="text-right font-medium">
-                                        Rp {{ number_format($product->total_amount, 0, ',', '.') }}
+                                        Rp {{ number_format($product->total_amount, 2, ',', '.') }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -151,7 +151,7 @@
                                         <x-badge value="{{ $sale->count }}" class="badge-info" />
                                     </td>
                                     <td class="text-right font-medium">
-                                        Rp {{ number_format($sale->total, 0, ',', '.') }}
+                                        Rp {{ number_format($sale->total, 2, ',', '.') }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -161,7 +161,7 @@
                                 <td>TOTAL</td>
                                 <td class="text-center">{{ $this->summaryStats()['total_transactions'] }}</td>
                                 <td class="text-right">Rp
-                                    {{ number_format($this->summaryStats()['total_sales'], 0, ',', '.') }}</td>
+                                    {{ number_format($this->summaryStats()['total_sales'], 2, ',', '.') }}</td>
                             </tr>
                         </tfoot>
                     </table>

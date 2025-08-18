@@ -28,7 +28,11 @@ class Profile extends Component
 
     public function mount()
     {
-        $user = Auth::user();
+        $user = DB::table('users')
+            ->select('name', 'email')
+            ->where('id', Auth::id())
+            ->first();
+            
         $this->name = $user->name;
         $this->email = $user->email;
     }

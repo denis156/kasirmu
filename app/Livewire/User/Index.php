@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\User;
 
+use App\Models\User;
 use Mary\Traits\Toast;
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -25,13 +26,13 @@ class Index extends Component
 
     public bool $deleteModal = false;
 
-    public ?object $userToDelete = null;
+    public ?User $userToDelete = null;
 
 
     // Show delete modal
     public function showDeleteModal($id): void
     {
-        $this->userToDelete = DB::table('users')->where('id', $id)->first();
+        $this->userToDelete = User::find($id);
         $this->deleteModal = true;
     }
 
@@ -39,7 +40,7 @@ class Index extends Component
     public function confirmDelete(): void
     {
         if ($this->userToDelete) {
-            DB::table('users')->where('id', $this->userToDelete->id)->delete();
+            $this->userToDelete->delete();
             $this->success("User '{$this->userToDelete->name}' berhasil dihapus.");
             $this->userToDelete = null;
         }

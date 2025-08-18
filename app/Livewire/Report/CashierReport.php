@@ -73,24 +73,24 @@ class CashierReport extends Component
     // Get cashier summary statistics
     public function summaryStats()
     {
-        $totalCashiers = DB::table('users')->where('is_active', true)->count();
+        $totalCashiers = DB::table('users')->count();
 
         $activeCashiers = DB::table('transactions')
             ->join('users', 'transactions.user_id', '=', 'users.id')
-            ->where('transactions.status', 'completed')
+            ->where('transactions.status', 'selesai')
             ->whereDate('transactions.transaction_date', '>=', $this->dateFrom)
             ->whereDate('transactions.transaction_date', '<=', $this->dateTo)
             ->distinct('users.id')
             ->count();
 
         $totalTransactions = DB::table('transactions')
-            ->where('status', 'completed')
+            ->where('status', 'selesai')
             ->whereDate('transaction_date', '>=', $this->dateFrom)
             ->whereDate('transaction_date', '<=', $this->dateTo)
             ->count();
 
         $totalSales = DB::table('transactions')
-            ->where('status', 'completed')
+            ->where('status', 'selesai')
             ->whereDate('transaction_date', '>=', $this->dateFrom)
             ->whereDate('transaction_date', '<=', $this->dateTo)
             ->sum('total_amount');
@@ -108,7 +108,6 @@ class CashierReport extends Component
     {
         return DB::table('users')
             ->select('id', 'name')
-            ->where('is_active', true)
             ->orderBy('name')
             ->get();
     }
@@ -118,7 +117,7 @@ class CashierReport extends Component
     {
         $query = DB::table('transactions')
             ->join('users', 'transactions.user_id', '=', 'users.id')
-            ->where('transactions.status', 'completed')
+            ->where('transactions.status', 'selesai')
             ->whereDate('transactions.transaction_date', '>=', $this->dateFrom)
             ->whereDate('transactions.transaction_date', '<=', $this->dateTo)
             ->select(
@@ -144,7 +143,7 @@ class CashierReport extends Component
     {
         $query = DB::table('transactions')
             ->join('users', 'transactions.user_id', '=', 'users.id')
-            ->where('transactions.status', 'completed')
+            ->where('transactions.status', 'selesai')
             ->whereDate('transactions.transaction_date', '>=', $this->dateFrom)
             ->whereDate('transactions.transaction_date', '<=', $this->dateTo)
             ->select(
@@ -170,7 +169,7 @@ class CashierReport extends Component
     {
         return DB::table('transactions')
             ->join('users', 'transactions.user_id', '=', 'users.id')
-            ->where('transactions.status', 'completed')
+            ->where('transactions.status', 'selesai')
             ->whereDate('transactions.transaction_date', '>=', $this->dateFrom)
             ->whereDate('transactions.transaction_date', '<=', $this->dateTo)
             ->select(
@@ -190,7 +189,7 @@ class CashierReport extends Component
     {
         return DB::table('transactions')
             ->join('users', 'transactions.user_id', '=', 'users.id')
-            ->where('transactions.status', 'completed')
+            ->where('transactions.status', 'selesai')
             ->whereDate('transactions.transaction_date', '>=', $this->dateFrom)
             ->whereDate('transactions.transaction_date', '<=', $this->dateTo)
             ->select(

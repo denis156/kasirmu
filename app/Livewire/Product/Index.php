@@ -11,6 +11,7 @@ use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\Product;
 
 #[Title('Daftar Produk')]
 class Index extends Component
@@ -51,7 +52,8 @@ class Index extends Component
     public function confirmDelete(): void
     {
         if ($this->productToDelete) {
-            DB::table('products')->where('id', $this->productToDelete->id)->delete();
+            // Use Eloquent for write operations
+            Product::find($this->productToDelete->id)?->delete();
             $this->success("Produk '{$this->productToDelete->name}' berhasil dihapus.");
             $this->productToDelete = null;
         }

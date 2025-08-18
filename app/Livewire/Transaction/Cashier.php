@@ -229,27 +229,39 @@ class Cashier extends Component
     // Products List Methods
     public function getProductsProperty()
     {
-        $query = Product::with('category')
-            ->where('is_active', true)
-            ->where('stock', '>', 0);
+        $query = DB::table('products')
+            ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->select(
+                'products.id',
+                'products.name',
+                'products.sku',
+                'products.barcode',
+                'products.price',
+                'products.stock',
+                'products.min_stock',
+                'products.is_active',
+                'categories.name as category_name'
+            )
+            ->where('products.is_active', true)
+            ->where('products.stock', '>', 0);
 
         if ($this->search) {
             $query->where(function($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('sku', 'like', '%' . $this->search . '%')
-                  ->orWhere('barcode', 'like', '%' . $this->search . '%');
+                $q->where('products.name', 'like', '%' . $this->search . '%')
+                  ->orWhere('products.sku', 'like', '%' . $this->search . '%')
+                  ->orWhere('products.barcode', 'like', '%' . $this->search . '%');
             });
         }
 
         if ($this->selectedCategory) {
-            $query->where('category_id', $this->selectedCategory);
+            $query->where('products.category_id', $this->selectedCategory);
         }
 
-        return $query->orderBy('name')
+        return $query->orderBy('products.name')
                     ->limit($this->productsLimit)
                     ->get()
                     ->map(function ($product) {
-                        $product->price_formatted = 'Rp ' . number_format((float) $product->price, 0, ',', '.');
+                        $product->price_formatted = 'Rp ' . number_format((float) $product->price, 2, ',', '.');
 
                         // Calculate remaining stock after cart items
                         $cartQuantity = collect($this->cart)->where('product_id', $product->id)->sum('quantity');
@@ -261,14 +273,17 @@ class Cashier extends Component
 
     public function getCategoriesProperty()
     {
-        return Category::where('is_active', true)
-                      ->orderBy('name')
-                      ->get(['id', 'name']);
+        return DB::table('categories')
+                  ->select('id', 'name')
+                  ->where('is_active', true)
+                  ->orderBy('name')
+                  ->get();
     }
 
     public function getTotalProductsCountProperty()
     {
-        $query = Product::where('is_active', true)
+        $query = DB::table('products')
+            ->where('is_active', true)
             ->where('stock', '>', 0);
 
         if ($this->search) {

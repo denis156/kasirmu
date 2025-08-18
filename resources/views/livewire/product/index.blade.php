@@ -1,7 +1,7 @@
 <div>
     <!-- HEADER -->
     <x-header title="Daftar Produk" subtitle="Kelola produk di halaman ini" icon="phosphor.package"
-        icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator progress-indicator>
+        icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator>
         <x-slot:actions>
             <x-button label="Filters" @click="$wire.drawer = true" responsive icon="phosphor.funnel"
                 class="btn-sm btn-primary" />

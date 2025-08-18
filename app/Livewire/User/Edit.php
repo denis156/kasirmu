@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\User;
 
+use App\Models\User;
 use Exception;
 use Mary\Traits\Toast;
 use Livewire\Component;
@@ -45,7 +46,7 @@ class Edit extends Component
 
     public function loadUser(): void
     {
-        $user = DB::table('users')->where('id', $this->userId)->first();
+        $user = User::find($this->userId);
 
         if (!$user) {
             $this->error('Pengguna tidak ditemukan.', redirectTo: route('users.index'));
@@ -56,7 +57,7 @@ class Edit extends Component
         $this->email = $user->email;
         $this->is_super_admin = (string) (int) $user->is_super_admin;
         $this->email_verified_at = $user->email_verified_at ? 
-            date('Y-m-d\TH:i', strtotime($user->email_verified_at)) : null;
+            $user->email_verified_at->format('Y-m-d\TH:i') : null;
     }
 
     protected function messages(): array
@@ -109,20 +110,19 @@ class Edit extends Component
         $this->validate();
 
         try {
-            $userData = [
-                'name' => $this->name,
-                'email' => $this->email,
-                'is_super_admin' => (bool) $this->is_super_admin,
-                'email_verified_at' => $this->email_verified_at,
-                'updated_at' => now(),
-            ];
+            $user = User::findOrFail($this->userId);
+            
+            $user->name = $this->name;
+            $user->email = $this->email;
+            $user->is_super_admin = (bool) $this->is_super_admin;
+            $user->email_verified_at = $this->email_verified_at;
 
             // Only update password if provided
             if (!empty($this->password)) {
-                $userData['password'] = Hash::make($this->password);
+                $user->password = Hash::make($this->password);
             }
 
-            DB::table('users')->where('id', $this->userId)->update($userData);
+            $user->save();
 
             $this->success('Pengguna berhasil diupdate!', redirectTo: route('users.index'));
         } catch (Exception) {

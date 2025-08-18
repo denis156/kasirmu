@@ -18,42 +18,52 @@ class Dashboard extends Component
         $this->loadSalesChart();
     }
 
+
     // Get today's statistics
     public function todayStats()
     {
         $today = now()->format('Y-m-d');
 
+        // Use single query with subqueries for better performance
+        $stats = DB::table('transactions')
+            ->selectRaw('
+                COALESCE(SUM(CASE WHEN status = "completed" THEN total_amount END), 0) as sales,
+                COUNT(CASE WHEN status = "completed" THEN 1 END) as transactions
+            ')
+            ->whereDate('transaction_date', $today)
+            ->first();
+
+        $products_sold = DB::table('transaction_items')
+            ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
+            ->whereDate('transactions.transaction_date', $today)
+            ->where('transactions.status', 'completed')
+            ->sum('transaction_items.quantity');
+
         return [
-            'sales' => DB::table('transactions')
-                ->whereDate('transaction_date', $today)
-                ->where('status', 'completed')
-                ->sum('total_amount'),
-            'transactions' => DB::table('transactions')
-                ->whereDate('transaction_date', $today)
-                ->where('status', 'completed')
-                ->count(),
-            'products_sold' => DB::table('transaction_items')
-                ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
-                ->whereDate('transactions.transaction_date', $today)
-                ->where('transactions.status', 'completed')
-                ->sum('transaction_items.quantity'),
+            'sales' => (float) $stats->sales,
+            'transactions' => (int) $stats->transactions,
+            'products_sold' => (int) $products_sold,
         ];
     }
 
     // Get monthly statistics
     public function monthlyStats()
     {
-        $thisMonth = now()->format('Y-m');
+        $startOfMonth = now()->startOfMonth()->format('Y-m-d');
+        $endOfMonth = now()->endOfMonth()->format('Y-m-d');
+
+        // Use single query with better date filtering for performance
+        $stats = DB::table('transactions')
+            ->selectRaw('
+                COALESCE(SUM(CASE WHEN status = "completed" THEN total_amount END), 0) as sales,
+                COUNT(CASE WHEN status = "completed" THEN 1 END) as transactions
+            ')
+            ->whereBetween('transaction_date', [$startOfMonth, $endOfMonth])
+            ->first();
 
         return [
-            'sales' => DB::table('transactions')
-                ->where('transaction_date', 'like', "$thisMonth%")
-                ->where('status', 'completed')
-                ->sum('total_amount'),
-            'transactions' => DB::table('transactions')
-                ->where('transaction_date', 'like', "$thisMonth%")
-                ->where('status', 'completed')
-                ->count(),
+            'sales' => (float) $stats->sales,
+            'transactions' => (int) $stats->transactions,
         ];
     }
 
@@ -80,6 +90,17 @@ class Dashboard extends Component
             ->groupBy('products.id', 'products.name')
             ->orderBy('total_sold', 'desc')
             ->limit(5)
+            ->get();
+    }
+
+    // Get recent transactions
+    public function recentTransactions()
+    {
+        return DB::table('transactions')
+            ->where('status', 'completed')
+            ->orderBy('transaction_date', 'desc')
+            ->limit(5)
+            ->select('id', 'total_amount', 'transaction_date', 'customer_name')
             ->get();
     }
 

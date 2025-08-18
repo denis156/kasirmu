@@ -1,7 +1,7 @@
 <div>
     <!-- HEADER -->
     <x-header title="Laporan Stok" subtitle="Analisis dan monitoring inventory toko • Beta Version - Sedang dikembangkan"
-        icon="phosphor.package" icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator progress-indicator>
+        icon="phosphor.package" icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator>
         <x-slot:actions>
             <x-button label="Export PDF" icon="phosphor.file-pdf" class="btn-error btn-sm"
                 tooltip="Sedang dalam pengembangan" responsive />
@@ -27,7 +27,7 @@
                 class="bg-error/10 text-error border border-error/20 shadow-sm shadow-error" />
 
             <x-stat title="Nilai Stok" description="Total nilai inventory"
-                value="Rp {{ number_format($this->stockSummary()['total_stock_value'], 0, ',', '.') }}"
+                value="Rp {{ number_format($this->stockSummary()['total_stock_value'], 2, ',', '.') }}"
                 icon="phosphor.currency-circle-dollar"
                 class="bg-success/10 text-success border border-success/20 shadow-sm shadow-success" />
         </div>
@@ -177,7 +177,7 @@
                                         @endif
                                     </td>
                                     <td class="text-right font-medium">
-                                        Rp {{ number_format($product->stock_value, 0, ',', '.') }}
+                                        Rp {{ number_format($product->stock_value, 2, ',', '.') }}
                                     </td>
                                 </tr>
                             @endforeach

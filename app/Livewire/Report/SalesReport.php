@@ -68,7 +68,7 @@ class SalesReport extends Component
     public function summaryStats()
     {
         $query = DB::table('transactions')
-            ->where('status', 'completed')
+            ->where('status', 'selesai')
             ->whereDate('transaction_date', '>=', $this->dateFrom)
             ->whereDate('transaction_date', '<=', $this->dateTo);
 
@@ -79,7 +79,7 @@ class SalesReport extends Component
         // Get total items sold
         $totalItems = DB::table('transaction_items')
             ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
-            ->where('transactions.status', 'completed')
+            ->where('transactions.status', 'selesai')
             ->whereDate('transactions.transaction_date', '>=', $this->dateFrom)
             ->whereDate('transactions.transaction_date', '<=', $this->dateTo)
             ->sum('transaction_items.quantity');
@@ -98,7 +98,7 @@ class SalesReport extends Component
         return DB::table('transaction_items')
             ->join('products', 'transaction_items.product_id', '=', 'products.id')
             ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
-            ->where('transactions.status', 'completed')
+            ->where('transactions.status', 'selesai')
             ->whereDate('transactions.transaction_date', '>=', $this->dateFrom)
             ->whereDate('transactions.transaction_date', '<=', $this->dateTo)
             ->select(
@@ -117,7 +117,7 @@ class SalesReport extends Component
     {
         return DB::table('transactions')
             ->selectRaw('DATE(transaction_date) as date, SUM(total_amount) as total, COUNT(*) as count')
-            ->where('status', 'completed')
+            ->where('status', 'selesai')
             ->whereDate('transaction_date', '>=', $this->dateFrom)
             ->whereDate('transaction_date', '<=', $this->dateTo)
             ->groupBy('date')
@@ -175,7 +175,7 @@ class SalesReport extends Component
             ->join('products', 'transaction_items.product_id', '=', 'products.id')
             ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
             ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
-            ->where('transactions.status', 'completed')
+            ->where('transactions.status', 'selesai')
             ->whereDate('transactions.transaction_date', '>=', $this->dateFrom)
             ->whereDate('transactions.transaction_date', '<=', $this->dateTo)
             ->select(

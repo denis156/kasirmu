@@ -29,7 +29,7 @@
                                         <h4 class="font-medium text-sm">{{ $item['name'] }}</h4>
                                         <p class="text-xs text-gray-500">{{ $item['sku'] }}</p>
                                         <p class="text-sm font-semibold text-primary">
-                                            Rp {{ number_format($item['price'], 0, ',', '.') }}
+                                            Rp {{ number_format($item['price'], 2, ',', '.') }}
                                         </p>
                                     </div>
                                     <div class="flex items-center gap-2">
@@ -69,7 +69,7 @@
                         <div class="bg-primary/10 p-3 rounded-lg">
                             <div class="flex justify-between font-bold text-lg">
                                 <span>Total:</span>
-                                <span class="text-primary">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                                <span class="text-primary">Rp {{ number_format($total, 2, ',', '.') }}</span>
                             </div>
                         </div>
 
@@ -91,24 +91,24 @@
                 <div class="space-y-1 text-sm">
                     <div class="flex justify-between">
                         <span>Subtotal:</span>
-                        <span>Rp {{ number_format(collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']), 0, ',', '.') }}</span>
+                        <span>Rp {{ number_format(collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']), 2, ',', '.') }}</span>
                     </div>
                     @if($taxRate > 0)
                         <div class="flex justify-between">
                             <span>Pajak ({{ $taxRate }}%):</span>
-                            <span>Rp {{ number_format(collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']) * ($taxRate / 100), 0, ',', '.') }}</span>
+                            <span>Rp {{ number_format(collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']) * ($taxRate / 100), 2, ',', '.') }}</span>
                         </div>
                     @endif
                     @if($discountAmount > 0)
                         <div class="flex justify-between text-success">
                             <span>Diskon:</span>
-                            <span>-Rp {{ number_format($discountAmount, 0, ',', '.') }}</span>
+                            <span>-Rp {{ number_format($discountAmount, 2, ',', '.') }}</span>
                         </div>
                     @endif
                     <div class="border-t pt-1 mt-2">
                         <div class="flex justify-between font-bold">
                             <span>Total:</span>
-                            <span class="text-primary">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                            <span class="text-primary">Rp {{ number_format($total, 2, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>
@@ -128,7 +128,7 @@
                     <div class="flex justify-between items-center">
                         <span class="font-medium">Kembalian:</span>
                         <span class="text-lg font-bold text-info">
-                            Rp {{ number_format($changeAmount, 0, ',', '.') }}
+                            Rp {{ number_format($changeAmount, 2, ',', '.') }}
                         </span>
                     </div>
                 </div>

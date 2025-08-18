@@ -1,7 +1,7 @@
 <div>
     <!-- HEADER -->
     <x-header title="Daftar Transaksi" subtitle="Kelola transaksi di halaman ini" icon="phosphor.receipt"
-        icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator progress-indicator>
+        icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator>
         <x-slot:actions>
             <x-button label="Filters" @click="$wire.drawer = true" responsive icon="phosphor.funnel"
                 class="btn-sm btn-primary" />
@@ -13,7 +13,7 @@
     <!-- TABLE  -->
     <x-card
         class="overflow-x-auto rounded-box border border-base-content/10 p-2 mt-4 bg-base-100 shadow-sm shadow-primary">
-        <x-table :headers="$this->headers()" :rows="$this->transactions()" with-pagination striped wire:poll.visible>
+        <x-table :headers="$this->headers()" :rows="$this->transactions()" with-pagination striped>
             <x-slot:empty>
                 <div class="text-center py-16">
                     <x-icon name="phosphor.receipt" class="w-16 h-16 mx-auto mb-4 text-base-content/40" />

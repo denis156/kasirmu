@@ -164,7 +164,7 @@ class StockReport extends Component
                 DB::raw('COALESCE(categories.name, "Tanpa Kategori") as category_name'),
                 DB::raw('SUM(transaction_items.quantity) as total_sold')
             )
-            ->where('transactions.status', 'completed')
+            ->where('transactions.status', 'selesai')
             ->whereDate('transactions.transaction_date', '>=', now()->subDays(30))
             ->groupBy('products.id', 'products.name', 'products.stock', 'products.min_stock', 'categories.name')
             ->orderBy('total_sold', 'desc')

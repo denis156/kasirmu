@@ -11,6 +11,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 
 #[Title('Login')]
@@ -42,17 +43,21 @@ class Login extends Component
     {
         $this->validate();
 
-        // Try login with email first, then with name
-        $user = User::where('email', $this->login)
-                   ->orWhere('name', $this->login)
-                   ->first();
+        // Try login with email first, then with name using DB facade
+        $user = DB::table('users')
+            ->select('id', 'name', 'email', 'password')
+            ->where('email', $this->login)
+            ->orWhere('name', $this->login)
+            ->first();
 
         if (!$user || !Hash::check($this->password, $user->password)) {
             $this->error('Email/nama pengguna atau password salah.');
             return;
         }
 
-        Auth::login($user, $this->remember);
+        // Create User model instance for Auth::login
+        $userModel = User::find($user->id);
+        Auth::login($userModel, $this->remember);
 
         $this->success("Selamat datang, {$user->name}!", redirectTo: route('dashboard'));
     }

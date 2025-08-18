@@ -1,7 +1,7 @@
 <div>
     <!-- HEADER -->
     <x-header title="Profile" subtitle="Kelola informasi akun Anda" icon="phosphor.user"
-        icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator progress-indicator />
+        icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator />
 
     <!-- USER INFO CARD -->
     <x-card title="Informasi Akun" subtitle="Detail akun Anda" shadow

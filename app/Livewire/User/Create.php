@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Livewire\User;
 
+use App\Models\User;
 use Exception;
 use Mary\Traits\Toast;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 #[Title('Buat Pengguna')]
@@ -76,17 +76,13 @@ class Create extends Component
         $this->validate();
 
         try {
-            $userData = [
+            User::create([
                 'name' => $this->name,
                 'email' => $this->email,
                 'password' => Hash::make($this->password),
                 'is_super_admin' => (bool) $this->is_super_admin,
                 'email_verified_at' => $this->email_verified_at,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-
-            DB::table('users')->insert($userData);
+            ]);
 
             $this->success('Pengguna berhasil dibuat!', redirectTo: route('users.index'));
         } catch (Exception) {

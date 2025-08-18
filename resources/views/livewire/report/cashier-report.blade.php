@@ -2,7 +2,7 @@
     <!-- HEADER -->
     <x-header title="Laporan Kasir"
         subtitle="Analisis performa dan produktivitas kasir • Beta Version - Sedang dikembangkan" icon="phosphor.user"
-        icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator progress-indicator>
+        icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator>
         <x-slot:actions>
             <x-button label="Export PDF" icon="phosphor.file-pdf" class="btn-error btn-sm"
                 tooltip="Sedang dalam pengembangan" responsive />
@@ -28,7 +28,7 @@
                 class="bg-primary/10 text-primary border border-primary/20 shadow-sm shadow-primary" />
 
             <x-stat title="Total Penjualan" description="Pendapatan periode ini"
-                value="Rp {{ number_format($this->summaryStats()['total_sales'], 0, ',', '.') }}"
+                value="Rp {{ number_format($this->summaryStats()['total_sales'], 2, ',', '.') }}"
                 icon="phosphor.currency-circle-dollar"
                 class="bg-warning/10 text-warning border border-warning/20 shadow-sm shadow-warning" />
         </div>
@@ -130,10 +130,10 @@
                                             class="badge-info badge-sm" />
                                     </td>
                                     <td class="text-right font-medium">
-                                        Rp {{ number_format($cashier->total_sales, 0, ',', '.') }}
+                                        Rp {{ number_format($cashier->total_sales, 2, ',', '.') }}
                                     </td>
                                     <td class="text-right text-sm text-base-content/70">
-                                        Rp {{ number_format($cashier->avg_transaction, 0, ',', '.') }}
+                                        Rp {{ number_format($cashier->avg_transaction, 2, ',', '.') }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -170,7 +170,7 @@
                                             {{ \Carbon\Carbon::parse($transaction->transaction_date)->format('d/m H:i') }}
                                         </div>
                                         <div class="text-xs text-base-content/60">
-                                            {{ $transaction->invoice_number }}
+                                            {{ $transaction->transaction_code ?? 'N/A' }}
                                         </div>
                                     </td>
                                     <td>
@@ -178,7 +178,7 @@
                                     </td>
                                     <td class="text-right">
                                         <div class="font-medium">
-                                            Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}
+                                            Rp {{ number_format($transaction->total_amount, 2, ',', '.') }}
                                         </div>
                                     </td>
                                 </tr>
@@ -222,10 +222,10 @@
                                         class="badge-info" />
                                 </td>
                                 <td class="text-right font-medium">
-                                    Rp {{ number_format($cashier->total_sales, 0, ',', '.') }}
+                                    Rp {{ number_format($cashier->total_sales, 2, ',', '.') }}
                                 </td>
                                 <td class="text-right">
-                                    Rp {{ number_format($cashier->avg_transaction, 0, ',', '.') }}
+                                    Rp {{ number_format($cashier->avg_transaction, 2, ',', '.') }}
                                 </td>
                                 <td class="text-center">
                                     @if ($cashier->total_sales >= 1000000)
@@ -247,10 +247,10 @@
                             <td class="text-center">{{ number_format($this->summaryStats()['total_transactions']) }}
                             </td>
                             <td class="text-right">Rp
-                                {{ number_format($this->summaryStats()['total_sales'], 0, ',', '.') }}</td>
+                                {{ number_format($this->summaryStats()['total_sales'], 2, ',', '.') }}</td>
                             <td class="text-right">
                                 Rp
-                                {{ number_format($this->summaryStats()['total_transactions'] > 0 ? $this->summaryStats()['total_sales'] / $this->summaryStats()['total_transactions'] : 0, 0, ',', '.') }}
+                                {{ number_format($this->summaryStats()['total_transactions'] > 0 ? $this->summaryStats()['total_sales'] / $this->summaryStats()['total_transactions'] : 0, 2, ',', '.') }}
                             </td>
                             <td class="text-center">-</td>
                         </tr>
