@@ -97,10 +97,11 @@ class Dashboard extends Component
     public function recentTransactions()
     {
         return DB::table('transactions')
-            ->where('status', 'completed')
-            ->orderBy('transaction_date', 'desc')
+            ->join('users', 'transactions.user_id', '=', 'users.id')
+            ->where('transactions.status', 'selesai')
+            ->orderBy('transactions.transaction_date', 'desc')
             ->limit(5)
-            ->select('id', 'total_amount', 'transaction_date', 'customer_name')
+            ->select('transactions.id', 'transactions.total_amount', 'transactions.transaction_date', 'users.name as cashier_name', 'transactions.transaction_code')
             ->get();
     }
 
