@@ -8,7 +8,7 @@
         </div>
 
         <div>
-            <x-input label="Password" wire:model="password" type="password" icon="phosphor.lock"
+            <x-password label="Password" wire:model="password" type="password" icon="phosphor.lock"
                 placeholder="Masukkan password..." right required />
         </div>
 
