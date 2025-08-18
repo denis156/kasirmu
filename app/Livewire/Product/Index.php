@@ -6,11 +6,11 @@ namespace App\Livewire\Product;
 
 use Mary\Traits\Toast;
 use Livewire\Component;
-use Livewire\Attributes\Title;
 use Livewire\WithPagination;
+use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 #[Title('Daftar Produk')]
 class Index extends Component
@@ -75,6 +75,7 @@ class Index extends Component
             ['key' => 'category_name', 'label' => 'Kategori', 'disableLink' => true],
             ['key' => 'price', 'label' => 'Harga', 'disableLink' => true],
             ['key' => 'stock', 'label' => 'Stok', 'disableLink' => true],
+            ['key' => 'terjual', 'label' => 'Terjual', 'disableLink' => true],
             ['key' => 'is_active', 'label' => 'Status', 'disableLink' => true],
         ];
     }
@@ -99,7 +100,11 @@ class Index extends Component
 
         // Apply category filter
         if ($this->filterCategory) {
-            $query->where('products.category_id', $this->filterCategory);
+            if ($this->filterCategory === 'null') {
+                $query->whereNull('products.category_id');
+            } else {
+                $query->where('products.category_id', $this->filterCategory);
+            }
         }
 
         // Apply status filter
@@ -145,7 +150,7 @@ class Index extends Component
         // Convert to objects with proper boolean casting
         $items = $items->map(function ($item) {
             $item->is_active = (bool) $item->is_active;
-            $item->price_formatted = 'Rp ' . number_format($item->price, 0, ',', '.');
+            $item->price_formatted = 'Rp ' . number_format($item->price, 2, ',', '.');
             return $item;
         });
 
@@ -173,9 +178,14 @@ class Index extends Component
             ->orderBy('name')
             ->get(['id', 'name']);
 
-        return $categories->map(function ($category) {
+        $options = $categories->map(function ($category) {
             return ['id' => (string) $category->id, 'name' => $category->name];
         })->toArray();
+
+        // Tambahkan opsi untuk kategori yang belum diatur
+        array_unshift($options, ['id' => 'null', 'name' => 'Belum diatur']);
+
+        return $options;
     }
 
     public function getStatusFilterOptions(): array

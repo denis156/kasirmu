@@ -31,7 +31,7 @@
                     <x-badge value="{{ Str::words($product->category_name, 1, '...') }}"
                         class="badge-sm badge-soft badge-info" />
                 @else
-                    <x-badge value="-" class="badge-sm badge-soft badge-neutral" />
+                    <x-badge value="Belum diatur" class="badge-sm badge-soft badge-error" />
                 @endif
             @endscope
             @scope('cell_price', $product)
@@ -43,6 +43,9 @@
                 @else
                     <x-badge value="{{ $product->stock }}" class="badge-sm badge-soft badge-success" />
                 @endif
+            @endscope
+            @scope('cell_terjual', $product)
+                <x-badge value="{{ $product->terjual }}" class="badge-sm badge-soft badge-info" />
             @endscope
             @scope('cell_is_active', $product)
                 @if ($product->is_active)
