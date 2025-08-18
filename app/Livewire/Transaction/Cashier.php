@@ -266,6 +266,26 @@ class Cashier extends Component
                       ->get(['id', 'name']);
     }
 
+    public function getTotalProductsCountProperty()
+    {
+        $query = Product::where('is_active', true)
+            ->where('stock', '>', 0);
+
+        if ($this->search) {
+            $query->where(function($q) {
+                $q->where('name', 'like', '%' . $this->search . '%')
+                  ->orWhere('sku', 'like', '%' . $this->search . '%')
+                  ->orWhere('barcode', 'like', '%' . $this->search . '%');
+            });
+        }
+
+        if ($this->selectedCategory) {
+            $query->where('category_id', $this->selectedCategory);
+        }
+
+        return $query->count();
+    }
+
 
     public function loadMoreProducts(): void
     {

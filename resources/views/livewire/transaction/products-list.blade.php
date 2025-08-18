@@ -20,8 +20,8 @@
                             <h3 class="font-semibold text-sm line-clamp-2 mb-1">{{ $product->name }}</h3>
                             <p class="text-xs text-gray-500 truncate">{{ $product->sku }}</p>
                         </div>
-                        @if($product->category)
-                            <x-badge value="{{ Str::words($product->category->name, 1, '...') }}"
+                        @if($product->category_name)
+                            <x-badge value="{{ Str::words($product->category_name, 1, '...') }}"
                                 class="badge-xs badge-soft badge-info ml-2 shrink-0" />
                         @endif
                     </div>
@@ -33,10 +33,7 @@
 
                     <!-- Stock Info -->
                     <div class="flex justify-between items-center mb-4 flex-grow">
-                        <div class="flex items-center text-xs">
-                            <x-icon name="phosphor.stack" class="w-3 h-3 mr-1 shrink-0" />
-                            <span>Stok: {{ $product->available_stock }}</span>
-                        </div>
+                        <x-badge value="Stock: {{ $product->available_stock }}" class="badge-xs badge-primary" />
                         @if($product->available_stock <= $product->min_stock)
                             <x-badge value="Rendah" class="badge-xs badge-error shrink-0" />
                         @else
@@ -66,18 +63,28 @@
     </div>
 
     <!-- Load More/Less Buttons -->
-    @if($this->products->count() >= $productsLimit)
-        @if($productsLimit > 4)
+    @php
+        $hasMoreProducts = $this->products->count() >= $this->productsLimit && $this->productsLimit < $this->totalProductsCount;
+        $canShowLess = $this->productsLimit > 4;
+    @endphp
+
+    @if($hasMoreProducts || $canShowLess)
+        @if($hasMoreProducts && $canShowLess)
             <div class="grid grid-cols-2 gap-2 mt-4">
                 <x-button label="Lebih Banyak" icon="phosphor.plus"
                     class="btn-sm btn-primary btn-block" wire:click="loadMoreProducts" />
                 <x-button label="Lebih Sedikit" icon="phosphor.minus"
                     class="btn-sm btn-outline btn-block" wire:click="loadLessProducts" />
             </div>
-        @else
+        @elseif($hasMoreProducts)
             <div class="mt-4">
                 <x-button label="Lebih Banyak" icon="phosphor.plus"
                     class="btn-sm btn-primary btn-block" wire:click="loadMoreProducts" />
+            </div>
+        @elseif($canShowLess)
+            <div class="mt-4">
+                <x-button label="Lebih Sedikit" icon="phosphor.minus"
+                    class="btn-sm btn-outline btn-block" wire:click="loadLessProducts" />
             </div>
         @endif
     @endif
