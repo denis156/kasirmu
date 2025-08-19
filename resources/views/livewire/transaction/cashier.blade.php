@@ -69,7 +69,7 @@
                         <div class="bg-primary/10 p-3 rounded-lg">
                             <div class="flex justify-between font-bold text-lg">
                                 <span>Total:</span>
-                                <span class="text-primary">Rp {{ number_format($total, 2, ',', '.') }}</span>
+                                <span class="{{ $total < 0 ? 'text-error' : 'text-primary' }}">Rp {{ number_format($total, 2, ',', '.') }}</span>
                             </div>
                         </div>
 
@@ -108,7 +108,7 @@
                     <div class="border-t pt-1 mt-2">
                         <div class="flex justify-between font-bold">
                             <span>Total:</span>
-                            <span class="text-primary">Rp {{ number_format($total, 2, ',', '.') }}</span>
+                            <span class="{{ $total < 0 ? 'text-error' : 'text-primary' }}">Rp {{ number_format($total, 2, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>
@@ -116,14 +116,18 @@
 
             <!-- Payment Details -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <x-select label="Metode Pembayaran" wire:model="paymentMethod"
-                    :options="$this->getPaymentMethodOptions()" icon="phosphor.credit-card"
-                    option-value="id" option-label="name" />
-                <x-input label="Jumlah Bayar" wire:model.live="paidAmount"
-                    prefix="Rp" locale="id-ID" money required />
+                <div class="{{ $paymentMethod !== 'tunai' ? 'md:col-span-2' : '' }}">
+                    <x-select label="Metode Pembayaran" wire:model.live="paymentMethod"
+                        :options="$this->getPaymentMethodOptions()" icon="phosphor.credit-card"
+                        option-value="id" option-label="name" />
+                </div>
+                @if($paymentMethod === 'tunai')
+                    <x-input label="Jumlah Bayar" wire:model.live="paidAmount"
+                        prefix="Rp" locale="id-ID" money required />
+                @endif
             </div>
 
-            @if($paidAmount > 0)
+            @if($paymentMethod === 'tunai' && $paidAmount > 0)
                 <div class="bg-info/10 p-4 rounded-lg">
                     <div class="flex justify-between items-center">
                         <span class="font-medium">Kembalian:</span>
@@ -143,7 +147,7 @@
                 @click="$wire.paymentModal = false" />
             <x-button label="Proses Pembayaran" icon="phosphor.check"
                 class="btn-success" wire:click="processPayment"
-                :disabled="$paidAmount < $total" />
+                :disabled="$paymentMethod === 'tunai' ? $paidAmount < $total : false" />
         </x-slot:actions>
     </x-modal>
 </div>

@@ -29,8 +29,8 @@ class Cashier extends Component
     public float $changeAmount = 0;
     public string $paymentMethod = 'tunai';
     public string $notes = '';
-    public $taxRate = 0.0;
-    public $discountAmount = 0.0;
+    public float $taxRate = 0.0;
+    public float $discountAmount = 0.0;
     public int $productsLimit = 4;
 
     public bool $paymentModal = false;
@@ -122,7 +122,19 @@ class Cashier extends Component
         });
 
         $taxAmount = $subtotal * ((float) $this->taxRate / 100);
-        $this->total = max(0, $subtotal + $taxAmount - (float) $this->discountAmount);
+        
+        // Handle money input yang mungkin berupa string dengan format ribuan
+        $discountValue = $this->discountAmount;
+        if (is_string($discountValue)) {
+            // Hapus format ribuan dan konversi ke float
+            $discountValue = (float) str_replace(',', '', $discountValue);
+        } else {
+            $discountValue = (float) $discountValue;
+        }
+        
+        // Total = Subtotal + Pajak - Diskon (diskon mengurangi total)
+        // Biarkan bisa minus jika diskon lebih besar dari subtotal+pajak
+        $this->total = $subtotal + $taxAmount - $discountValue;
     }
 
     public function showPaymentModal(): void
@@ -132,7 +144,13 @@ class Cashier extends Component
             return;
         }
 
-        $this->paidAmount = $this->total;
+        // Set default paid amount berdasarkan payment method
+        if ($this->paymentMethod === 'tunai') {
+            $this->paidAmount = $this->total;
+        } else {
+            $this->paidAmount = 0; // Untuk non-tunai tidak perlu input manual
+        }
+        
         $this->calculateChange();
         $this->paymentModal = true;
     }
@@ -159,9 +177,16 @@ class Cashier extends Component
 
     public function processPayment(): void
     {
-        if ($this->paidAmount < $this->total) {
+        // Untuk metode tunai, cek jumlah bayar
+        if ($this->paymentMethod === 'tunai' && $this->paidAmount < $this->total) {
             $this->error('Jumlah bayar tidak mencukupi.');
             return;
+        }
+        
+        // Untuk metode non-tunai, set paid amount sama dengan total
+        if ($this->paymentMethod !== 'tunai') {
+            $this->paidAmount = $this->total;
+            $this->changeAmount = 0;
         }
 
         if (!Auth::check()) {
@@ -324,12 +349,22 @@ class Cashier extends Component
 
     public function getPaymentMethodOptions(): array
     {
-        return [
-            ['id' => 'tunai', 'name' => 'Tunai'],
-            ['id' => 'kartu', 'name' => 'Kartu'],
-            ['id' => 'transfer', 'name' => 'Transfer'],
-            ['id' => 'qris', 'name' => 'QRIS'],
+        $methods = [
+            ['id' => 'tunai', 'name' => 'Tunai']
         ];
+
+        // Cek apakah payment gateway diaktifkan
+        $paymentGatewayEnabled = Setting::get('payment_gateway_enabled', false);
+        
+        if ($paymentGatewayEnabled) {
+            $methods = array_merge($methods, [
+                ['id' => 'kartu', 'name' => 'Kartu'],
+                ['id' => 'transfer', 'name' => 'Transfer'],
+                ['id' => 'qris', 'name' => 'QRIS'],
+            ]);
+        }
+
+        return $methods;
     }
 
     public function render()
