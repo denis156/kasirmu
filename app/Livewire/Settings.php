@@ -257,10 +257,13 @@ class Settings extends Component
                         'sort_order' => $this->getSortOrderFromKey($settingData['key'])
                     ]);
                 } else {
-                    // Jika sudah ada, update value saja
-                    Setting::where('key', $key)->update([
-                        'value' => $settingData['value']
-                    ]);
+                    // Jika sudah ada, update value saja menggunakan model untuk trigger event
+                    $setting = Setting::where('key', $key)->first();
+                    if ($setting) {
+                        $setting->update([
+                            'value' => $settingData['value']
+                        ]);
+                    }
                 }
             }
 
