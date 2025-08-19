@@ -1,7 +1,6 @@
 <?php
 
 use App\Livewire\Login;
-use App\Livewire\Welcome;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,6 +12,10 @@ Route::get('/', function () {
 Route::get('/login', Login::class)
     ->name('login')
     ->middleware('guest');
+
+Route::get('/phpinfo', function () {
+    return phpinfo();
+});
 
 // Logout route
 Route::get('/logout', function () {
@@ -55,10 +58,14 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     // Reports
     Route::get('/laporan/penjualan', \App\Livewire\Report\SalesReport::class)
         ->name('reports.sales');
-    
+
     Route::get('/laporan/stok', \App\Livewire\Report\StockReport::class)
         ->name('reports.stock');
-    
+
     Route::get('/laporan/kasir', \App\Livewire\Report\CashierReport::class)
         ->name('reports.cashier');
+
+    // Settings (Admin only)
+    Route::get('/pengaturan', \App\Livewire\Settings::class)
+        ->name('settings');
 });
