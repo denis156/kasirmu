@@ -38,7 +38,7 @@
     </style>
 </head>
 
-<body class="bg-gradient-to-br from-base-100 via-base-50 to-base-200 min-h-screen overflow-x-hidden">
+<body class="bg-gradient-to-br from-base-100 via-base-200 to-base-300 min-h-screen overflow-x-hidden">
     <!-- NAVIGATION -->
     <nav class="navbar bg-base-100/90 backdrop-blur-lg border-b border-primary/20 sticky top-0 z-50 shadow-xl">
         <div class="navbar-start">
@@ -230,7 +230,7 @@
                 <div class="group card bg-base-100 shadow-xl hover:shadow-2xl border border-primary/10 hover:border-primary/30 transform hover:-translate-y-2 transition-all duration-500">
                     <div class="card-body p-8">
                         <div class="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                            <x-icon name="phosphor.cash-register" class="w-8 h-8 text-white" />
+                            <x-icon name="phosphor.cash-register" class="w-8 h-8 text-primary-content" />
                         </div>
                         <h3 class="card-title text-2xl mb-4 group-hover:text-primary transition-colors">Kasir Modern</h3>
                         <p class="text-base-content/70 leading-relaxed">
@@ -246,7 +246,7 @@
                 <div class="group card bg-base-100 shadow-xl hover:shadow-2xl border border-success/10 hover:border-success/30 transform hover:-translate-y-2 transition-all duration-500">
                     <div class="card-body p-8">
                         <div class="w-16 h-16 bg-gradient-to-br from-success to-success/80 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                            <x-icon name="phosphor.package" class="w-8 h-8 text-white" />
+                            <x-icon name="phosphor.package" class="w-8 h-8 text-success-content" />
                         </div>
                         <h3 class="card-title text-2xl mb-4 group-hover:text-success transition-colors">Smart Inventory</h3>
                         <p class="text-base-content/70 leading-relaxed">
@@ -262,7 +262,7 @@
                 <div class="group card bg-base-100 shadow-xl hover:shadow-2xl border border-info/10 hover:border-info/30 transform hover:-translate-y-2 transition-all duration-500">
                     <div class="card-body p-8">
                         <div class="w-16 h-16 bg-gradient-to-br from-info to-info/80 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                            <x-icon name="phosphor.chart-line" class="w-8 h-8 text-white" />
+                            <x-icon name="phosphor.chart-line" class="w-8 h-8 text-info-content" />
                         </div>
                         <h3 class="card-title text-2xl mb-4 group-hover:text-info transition-colors">Analytics Pro</h3>
                         <p class="text-base-content/70 leading-relaxed">
@@ -278,7 +278,7 @@
                 <div class="group card bg-base-100 shadow-xl hover:shadow-2xl border border-warning/10 hover:border-warning/30 transform hover:-translate-y-2 transition-all duration-500">
                     <div class="card-body p-8">
                         <div class="w-16 h-16 bg-gradient-to-br from-warning to-warning/80 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                            <x-icon name="phosphor.users" class="w-8 h-8 text-white" />
+                            <x-icon name="phosphor.users" class="w-8 h-8 text-warning-content" />
                         </div>
                         <h3 class="card-title text-2xl mb-4 group-hover:text-warning transition-colors">Multi User Access</h3>
                         <p class="text-base-content/70 leading-relaxed">
@@ -294,7 +294,7 @@
                 <div class="group card bg-base-100 shadow-xl hover:shadow-2xl border border-error/10 hover:border-error/30 transform hover:-translate-y-2 transition-all duration-500">
                     <div class="card-body p-8">
                         <div class="w-16 h-16 bg-gradient-to-br from-error to-error/80 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                            <x-icon name="phosphor.shield-check" class="w-8 h-8 text-white" />
+                            <x-icon name="phosphor.shield-check" class="w-8 h-8 text-error-content" />
                         </div>
                         <h3 class="card-title text-2xl mb-4 group-hover:text-error transition-colors">Enterprise Security</h3>
                         <p class="text-base-content/70 leading-relaxed">
@@ -310,7 +310,7 @@
                 <div class="group card bg-base-100 shadow-xl hover:shadow-2xl border border-secondary/10 hover:border-secondary/30 transform hover:-translate-y-2 transition-all duration-500">
                     <div class="card-body p-8">
                         <div class="w-16 h-16 bg-gradient-to-br from-secondary to-secondary/80 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                            <x-icon name="phosphor.devices" class="w-8 h-8 text-white" />
+                            <x-icon name="phosphor.devices" class="w-8 h-8 text-secondary-content" />
                         </div>
                         <h3 class="card-title text-2xl mb-4 group-hover:text-secondary transition-colors">Cross Platform</h3>
                         <p class="text-base-content/70 leading-relaxed">
@@ -332,15 +332,15 @@
         <div class="absolute inset-0">
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/90 via-secondary/90 to-accent/90"></div>
             <div class="absolute top-0 left-0 w-full h-full">
-                <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse"></div>
-                <div class="absolute top-40 right-20 w-32 h-32 bg-white/5 rounded-full animate-pulse" style="animation-delay: 2s"></div>
-                <div class="absolute bottom-20 left-1/3 w-16 h-16 bg-white/10 rounded-full animate-pulse" style="animation-delay: 4s"></div>
+                <div class="absolute top-10 left-10 w-20 h-20 bg-base-content/10 rounded-full animate-pulse"></div>
+                <div class="absolute top-40 right-20 w-32 h-32 bg-base-content/5 rounded-full animate-pulse" style="animation-delay: 2s"></div>
+                <div class="absolute bottom-20 left-1/3 w-16 h-16 bg-base-content/10 rounded-full animate-pulse" style="animation-delay: 4s"></div>
             </div>
         </div>
 
         <div class="container mx-auto px-4 text-center relative z-10">
-            <div class="max-w-4xl mx-auto text-white">
-                <div class="inline-flex items-center gap-2 bg-white/20 rounded-full px-6 py-2 mb-8">
+            <div class="max-w-4xl mx-auto text-primary-content">
+                <div class="inline-flex items-center gap-2 bg-base-content/20 rounded-full px-6 py-2 mb-8">
                     <x-icon name="phosphor.rocket-launch" class="w-5 h-5" />
                     <span class="font-semibold">Siap Meluncur</span>
                 </div>
@@ -371,20 +371,20 @@
 
                 <div class="mt-12 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
                     <div class="text-center">
-                        <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-2">
-                            <x-icon name="phosphor.gift" class="w-6 h-6 text-white" />
+                        <div class="w-12 h-12 bg-base-content/20 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                            <x-icon name="phosphor.gift" class="w-6 h-6 text-primary-content" />
                         </div>
                         <div class="text-sm opacity-80 mt-1">Gratis Trial</div>
                     </div>
                     <div class="text-center">
-                        <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-2">
-                            <x-icon name="phosphor.rocket-launch" class="w-6 h-6 text-white" />
+                        <div class="w-12 h-12 bg-base-content/20 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                            <x-icon name="phosphor.rocket-launch" class="w-6 h-6 text-primary-content" />
                         </div>
                         <div class="text-sm opacity-80 mt-1">Setup Cepat</div>
                     </div>
                     <div class="text-center">
-                        <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-2">
-                            <x-icon name="phosphor.headset" class="w-6 h-6 text-white" />
+                        <div class="w-12 h-12 bg-base-content/20 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                            <x-icon name="phosphor.headset" class="w-6 h-6 text-primary-content" />
                         </div>
                         <div class="text-sm opacity-80 mt-1">Support 24/7</div>
                     </div>
@@ -403,7 +403,7 @@
         <div class="relative z-10">
             <div class="flex items-center gap-4 mb-6">
                 <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg">
-                    <x-icon name="phosphor.cash-register" class="w-8 h-8 text-white" />
+                    <x-icon name="phosphor.cash-register" class="w-8 h-8 text-primary-content" />
                 </div>
                 <div>
                     <div class="text-2xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
