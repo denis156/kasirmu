@@ -74,7 +74,7 @@ class Setting extends Model
     {
         $cacheKey = "setting.{$key}";
 
-        return Cache::remember($cacheKey, now()->addHours(24), function () use ($key, $default) {
+        return Cache::remember($cacheKey, now()->addMinutes(5), function () use ($key, $default) {
             $setting = static::where('key', $key)->first();
             return $setting ? $setting->value : $default;
         });
