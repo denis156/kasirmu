@@ -33,6 +33,7 @@
 
             {{-- Brand --}}
             <div class="text-md sm:text-lg md:text-xl font-bold">{{ config('app.name') }}</div>
+            <x-theme-toggle class="btn btn-circle btn-ghost ml-2" @theme-changed="console.log($event.detail)" />
         </x-slot:brand>
 
         {{-- Right side actions --}}
@@ -44,6 +45,7 @@
             </div>
             <x-button label="Github" icon="phosphor.github-logo" external link="https://github.com/denis156" class="btn-primary btn-dash btn-xs" responsive />
             <x-button label="Instagram" icon="phosphor.instagram-logo" external link="https://www.instagram.com/artelia_development" class="btn-primary btn-dash btn-xs" responsive />
+
         </x-slot:actions>
     </x-nav>
 
@@ -106,6 +108,10 @@
                 <!-- AKUN & PENGATURAN -->
                 <x-menu-separator />
                 <x-menu-item title="Profile" icon="phosphor.user" link="{{ route('profile') }}" />
+
+                @if(Auth::user()->is_super_admin)
+                    <x-menu-item title="Pengaturan" icon="phosphor.gear" link="{{ route('settings') }}" />
+                @endif
             </x-menu>
         </x-slot:sidebar>
 
