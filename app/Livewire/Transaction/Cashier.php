@@ -8,6 +8,7 @@ use Mary\Traits\Toast;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\Category;
+use App\Models\Setting;
 use App\Models\Transaction;
 use Livewire\Attributes\Title;
 use App\Models\TransactionItem;
@@ -42,7 +43,8 @@ class Cashier extends Component
 
     public function mount(): void
     {
-        $this->taxRate = 0.0;
+        // Ambil tax rate dari settings
+        $this->taxRate = (float) Setting::get('tax_rate', 11);
         $this->discountAmount = 0.0;
         $this->total = 0.0;
     }
@@ -145,14 +147,14 @@ class Cashier extends Component
         $this->calculateChange();
     }
 
-    public function updatedTaxRate(): void
+    public function updatedDiscountAmount(): void
     {
         $this->calculateTotal();
     }
 
-    public function updatedDiscountAmount(): void
+    public function getTaxRateFromSettings(): float
     {
-        $this->calculateTotal();
+        return (float) Setting::get('tax_rate', 11);
     }
 
     public function processPayment(): void
@@ -220,7 +222,8 @@ class Cashier extends Component
         $this->changeAmount = 0;
         $this->paymentMethod = 'tunai';
         $this->notes = '';
-        $this->taxRate = 0;
+        // Ambil tax rate dari settings, jangan direset ke 0
+        $this->taxRate = (float) Setting::get('tax_rate', 11);
         $this->discountAmount = 0;
         $this->paymentModal = false;
     }

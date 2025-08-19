@@ -60,8 +60,8 @@
                 @if(count($cart) > 0)
                     <div class="border-t pt-4 mt-4 space-y-3">
                         <div class="grid grid-cols-2 gap-2">
-                            <x-input label="Pajak (%)" wire:model.live="taxRate" type="number"
-                                step="0.01" min="0" max="100" class="input-sm" />
+                            <x-input label="Pajak (%)" wire:model="taxRate" type="number"
+                                step="0.01" min="0" max="100" class="input-sm" readonly />
                             <x-input label="Diskon (Rp)" wire:model.live="discountAmount"
                                 prefix="Rp" locale="id-ID" money class="input-sm" />
                         </div>
