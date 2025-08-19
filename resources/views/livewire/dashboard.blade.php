@@ -135,10 +135,10 @@
                         <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg">
                             <div>
                                 <h4 class="font-medium text-base-content">
-                                    {{ $transaction->customer_name ?: 'Umum' }}
+                                    {{ $transaction->transaction_code }}
                                 </h4>
                                 <p class="text-sm text-base-content/60">
-                                    {{ \Carbon\Carbon::parse($transaction->transaction_date)->format('d/m/Y H:i') }}
+                                    {{ \Carbon\Carbon::parse($transaction->transaction_date)->format('d/m/Y H:i') }} • {{ $transaction->cashier_name }}
                                 </p>
                             </div>
                             <div class="text-right">

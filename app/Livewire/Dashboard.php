@@ -27,8 +27,8 @@ class Dashboard extends Component
         // Use single query with subqueries for better performance
         $stats = DB::table('transactions')
             ->selectRaw('
-                COALESCE(SUM(CASE WHEN status = "completed" THEN total_amount END), 0) as sales,
-                COUNT(CASE WHEN status = "completed" THEN 1 END) as transactions
+                COALESCE(SUM(CASE WHEN status = "selesai" THEN total_amount END), 0) as sales,
+                COUNT(CASE WHEN status = "selesai" THEN 1 END) as transactions
             ')
             ->whereDate('transaction_date', $today)
             ->first();
@@ -36,7 +36,7 @@ class Dashboard extends Component
         $products_sold = DB::table('transaction_items')
             ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
             ->whereDate('transactions.transaction_date', $today)
-            ->where('transactions.status', 'completed')
+            ->where('transactions.status', 'selesai')
             ->sum('transaction_items.quantity');
 
         return [
@@ -55,8 +55,8 @@ class Dashboard extends Component
         // Use single query with better date filtering for performance
         $stats = DB::table('transactions')
             ->selectRaw('
-                COALESCE(SUM(CASE WHEN status = "completed" THEN total_amount END), 0) as sales,
-                COUNT(CASE WHEN status = "completed" THEN 1 END) as transactions
+                COALESCE(SUM(CASE WHEN status = "selesai" THEN total_amount END), 0) as sales,
+                COUNT(CASE WHEN status = "selesai" THEN 1 END) as transactions
             ')
             ->whereBetween('transaction_date', [$startOfMonth, $endOfMonth])
             ->first();
@@ -84,7 +84,7 @@ class Dashboard extends Component
         return DB::table('transaction_items')
             ->join('products', 'transaction_items.product_id', '=', 'products.id')
             ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
-            ->where('transactions.status', 'completed')
+            ->where('transactions.status', 'selesai')
             ->whereDate('transactions.transaction_date', '>=', now()->subDays(30))
             ->select('products.name', DB::raw('SUM(transaction_items.quantity) as total_sold'))
             ->groupBy('products.id', 'products.name')
@@ -101,7 +101,13 @@ class Dashboard extends Component
             ->where('transactions.status', 'selesai')
             ->orderBy('transactions.transaction_date', 'desc')
             ->limit(5)
-            ->select('transactions.id', 'transactions.total_amount', 'transactions.transaction_date', 'users.name as cashier_name', 'transactions.transaction_code')
+            ->select(
+                'transactions.id', 
+                'transactions.total_amount', 
+                'transactions.transaction_date', 
+                'users.name as cashier_name', 
+                'transactions.transaction_code'
+            )
             ->get();
     }
 
@@ -110,7 +116,7 @@ class Dashboard extends Component
     {
         $salesData = DB::table('transactions')
             ->selectRaw('DATE(transaction_date) as date, SUM(total_amount) as total')
-            ->where('status', 'completed')
+            ->where('status', 'selesai')
             ->whereDate('transaction_date', '>=', now()->subDays(7))
             ->groupBy('date')
             ->orderBy('date')
