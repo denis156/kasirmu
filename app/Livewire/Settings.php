@@ -68,7 +68,12 @@ class Settings extends Component
     {
         $formatted = [];
         
-        // Jika ada data dari database, gunakan itu
+        // Mulai dengan default values
+        if (!empty($defaults)) {
+            $formatted = $defaults;
+        }
+        
+        // Override dengan data dari database jika ada
         foreach ($settings as $setting) {
             $formatted[$setting->key] = [
                 'id' => $setting->id,
@@ -79,11 +84,6 @@ class Settings extends Component
                 'description' => $setting->description,
                 'is_public' => $setting->is_public
             ];
-        }
-        
-        // Jika tidak ada data dari database, gunakan default values
-        if (empty($formatted) && !empty($defaults)) {
-            $formatted = $defaults;
         }
         
         return $formatted;
@@ -161,6 +161,15 @@ class Settings extends Component
                 'description' => 'Aktifkan fitur payment gateway',
                 'is_public' => false
             ],
+            'midtrans_merchant_id' => [
+                'id' => null,
+                'key' => 'midtrans_merchant_id',
+                'label' => 'Midtrans Merchant ID',
+                'value' => '',
+                'type' => 'text',
+                'description' => 'Merchant ID untuk Midtrans Payment Gateway',
+                'is_public' => false
+            ],
             'midtrans_server_key' => [
                 'id' => null,
                 'key' => 'midtrans_server_key',
@@ -188,6 +197,8 @@ class Settings extends Component
                 'description' => 'Aktifkan mode production untuk Midtrans',
                 'is_public' => false
             ],
+            // TODO: Xendit Payment Gateway Settings - untuk implementasi masa depan
+            /*
             'xendit_secret_key' => [
                 'id' => null,
                 'key' => 'xendit_secret_key',
@@ -215,6 +226,7 @@ class Settings extends Component
                 'description' => 'Callback Token untuk validasi webhook Xendit',
                 'is_public' => false
             ]
+            */
         ];
     }
 
@@ -232,8 +244,8 @@ class Settings extends Component
     {
         try {
             foreach ($settings as $key => $settingData) {
-                // Jika ID null (data belum ada di database), buat record baru
-                if ($settingData['id'] === null) {
+                // Jika ID tidak ada atau null (data belum ada di database), buat record baru
+                if (!isset($settingData['id']) || $settingData['id'] === null) {
                     Setting::create([
                         'key' => $settingData['key'],
                         'label' => $settingData['label'],
@@ -265,7 +277,8 @@ class Settings extends Component
     {
         // Tentukan group berdasarkan key
         $businessKeys = ['business_name', 'business_tagline', 'business_description', 'business_owner', 'contact_email', 'contact_phone'];
-        $paymentKeys = ['payment_gateway_enabled', 'midtrans_server_key', 'midtrans_client_key', 'midtrans_is_production', 'xendit_secret_key', 'xendit_public_key', 'xendit_callback_token'];
+        $paymentKeys = ['payment_gateway_enabled', 'midtrans_merchant_id', 'midtrans_server_key', 'midtrans_client_key', 'midtrans_is_production'];
+        // TODO: Tambahkan Xendit keys ketika diimplementasikan: 'xendit_secret_key', 'xendit_public_key', 'xendit_callback_token'
         $systemKeys = ['tax_rate'];
         
         if (in_array($key, $businessKeys)) {
@@ -291,12 +304,14 @@ class Settings extends Component
             'contact_phone' => 5,
             'tax_rate' => 3,
             'payment_gateway_enabled' => 1,
-            'midtrans_server_key' => 2,
-            'midtrans_client_key' => 3,
-            'midtrans_is_production' => 4,
-            'xendit_secret_key' => 5,
-            'xendit_public_key' => 6,
-            'xendit_callback_token' => 7
+            'midtrans_merchant_id' => 2,
+            'midtrans_server_key' => 3,
+            'midtrans_client_key' => 4,
+            'midtrans_is_production' => 5
+            // TODO: Tambahkan Xendit sort order ketika diimplementasikan:
+            // 'xendit_secret_key' => 6,
+            // 'xendit_public_key' => 7,
+            // 'xendit_callback_token' => 8
         ];
         
         return $sortOrders[$key] ?? 99;
@@ -318,6 +333,14 @@ class Settings extends Component
                 'icon' => 'phosphor.credit-card',
                 'description' => 'Konfigurasi sistem pembayaran online'
             ]
+        ];
+    }
+
+    public function getMidtransModeOptions(): array
+    {
+        return [
+            ['id' => '0', 'name' => 'Sandbox (Testing)'],
+            ['id' => '1', 'name' => 'Production (Live)']
         ];
     }
 
