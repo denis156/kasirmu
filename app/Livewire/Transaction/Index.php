@@ -67,7 +67,9 @@ class Index extends Component
             ['key' => 'no', 'label' => 'No.', 'sortable' => false, 'disableLink' => true],
             ['key' => 'transaction_code', 'label' => 'Kode Transaksi'],
             ['key' => 'user_name', 'label' => 'Kasir', 'disableLink' => true],
+            ['key' => 'items', 'label' => 'Produk', 'disableLink' => true],
             ['key' => 'total_amount', 'label' => 'Total', 'disableLink' => true],
+            ['key' => 'change_amount', 'label' => 'Kembalian', 'disableLink' => true],
             ['key' => 'payment_method', 'label' => 'Metode Bayar', 'disableLink' => true],
             ['key' => 'status', 'label' => 'Status', 'disableLink' => true],
             ['key' => 'transaction_date', 'label' => 'Tanggal'],
@@ -122,8 +124,20 @@ class Index extends Component
 
         // Format data
         $items = $items->map(function ($item) {
-            $item->total_amount_formatted = 'Rp ' . number_format($item->total_amount, 2, ',', '.');
+            $item->total_amount_formatted = 'Rp ' . number_format((float) $item->total_amount, 2, ',', '.');
+            $item->change_amount_formatted = 'Rp ' . number_format((float) $item->change_amount, 2, ',', '.');
             $item->transaction_date_formatted = \Carbon\Carbon::parse($item->transaction_date)->format('d/m/Y H:i');
+
+            // Get transaction items
+            $transactionItems = DB::table('transaction_items')
+                ->where('transaction_id', $item->id)
+                ->select('product_name', 'quantity')
+                ->get();
+
+            $item->items_formatted = $transactionItems->map(function ($txItem, $index) {
+                return ($index + 1) . '. ' . $txItem->product_name . ' (' . $txItem->quantity . ' item)';
+            })->join('<br>');
+
             return $item;
         });
 

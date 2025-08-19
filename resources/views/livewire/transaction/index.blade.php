@@ -29,6 +29,20 @@
             @scope('cell_total_amount', $transaction)
                 <span class="font-medium">{{ $transaction->total_amount_formatted }}</span>
             @endscope
+            @scope('cell_items', $transaction)
+                <div class="text-xs max-w-xs">
+                    @if($transaction->items_formatted)
+                        <span class="text-base-content/80">{!! $transaction->items_formatted !!}</span>
+                    @else
+                        <span class="text-base-content/40 italic">Tidak ada produk</span>
+                    @endif
+                </div>
+            @endscope
+            @scope('cell_change_amount', $transaction)
+                <span class="font-medium {{ $transaction->change_amount > 0 ? 'text-success' : 'text-base-content/60' }}">
+                    {{ $transaction->change_amount_formatted }}
+                </span>
+            @endscope
             @scope('cell_payment_method', $transaction)
                 @php
                     $methodClass = match ($transaction->payment_method) {
