@@ -13,21 +13,21 @@ class SettingSeeder extends Seeder
     public function run(): void
     {
         $settings = [
-            // Business Information (Public)
+            // Business Information - Tab "Bisnis & Konfigurasi"
             [
                 'key' => 'business_name',
                 'label' => 'Nama Bisnis',
-                'value' => 'KasirMu Store',
+                'value' => 'KasirMu By Artelia',
                 'type' => 'text',
                 'group' => 'business',
-                'description' => 'Nama bisnis yang akan ditampilkan di landing page dan aplikasi',
+                'description' => 'Nama bisnis/toko Anda',
                 'is_public' => true,
                 'sort_order' => 1
             ],
             [
                 'key' => 'business_tagline',
                 'label' => 'Tagline Bisnis',
-                'value' => 'Solusi POS Modern untuk Bisnis Masa Depan',
+                'value' => 'Solusi Kasir Digital Terpercaya',
                 'type' => 'text',
                 'group' => 'business',
                 'description' => 'Tagline atau slogan bisnis',
@@ -37,7 +37,7 @@ class SettingSeeder extends Seeder
             [
                 'key' => 'business_description',
                 'label' => 'Deskripsi Bisnis',
-                'value' => 'Sistem Point of Sale terdepan yang membantu ribuan bisnis Indonesia berkembang dengan teknologi modern dan interface yang intuitif.',
+                'value' => 'Sistem Point of Sale (POS) modern yang memudahkan pengelolaan transaksi, inventory, dan laporan penjualan untuk bisnis Anda.',
                 'type' => 'text',
                 'group' => 'business',
                 'description' => 'Deskripsi lengkap tentang bisnis',
@@ -45,139 +45,76 @@ class SettingSeeder extends Seeder
                 'sort_order' => 3
             ],
             [
-                'key' => 'contact_email',
-                'label' => 'Email Kontak',
-                'value' => 'info@kasirmu.com',
+                'key' => 'business_owner',
+                'label' => 'Pemilik Bisnis',
+                'value' => 'Artelia',
                 'type' => 'text',
                 'group' => 'business',
-                'description' => 'Email untuk kontak bisnis',
-                'is_public' => true,
+                'description' => 'Nama pemilik bisnis',
+                'is_public' => false,
                 'sort_order' => 4
             ],
             [
-                'key' => 'contact_phone',
-                'label' => 'Nomor Telepon',
-                'value' => '+62 812-3456-7890',
+                'key' => 'contact_email',
+                'label' => 'Email Kontak',
+                'value' => 'info@kasirmu.artelia.id',
                 'type' => 'text',
                 'group' => 'business',
-                'description' => 'Nomor telepon untuk kontak',
+                'description' => 'Email untuk komunikasi bisnis',
                 'is_public' => true,
                 'sort_order' => 5
             ],
             [
-                'key' => 'business_owner',
-                'label' => 'Nama Pemilik',
-                'value' => 'ArteliaDev',
+                'key' => 'contact_phone',
+                'label' => 'Telepon Kontak',
+                'value' => '08123456789',
                 'type' => 'text',
                 'group' => 'business',
-                'description' => 'Nama pemilik bisnis',
+                'description' => 'Nomor telepon untuk komunikasi bisnis',
                 'is_public' => true,
                 'sort_order' => 6
             ],
-
-            // Statistics (Public)
             [
-                'key' => 'total_active_products',
-                'label' => 'Total Produk Aktif',
-                'value' => '0',
+                'key' => 'tax_rate',
+                'label' => 'Tarif Pajak (%)',
+                'value' => '11',
                 'type' => 'number',
-                'group' => 'statistics',
-                'description' => 'Jumlah produk aktif di sistem',
-                'is_public' => true,
-                'sort_order' => 1
-            ],
-            [
-                'key' => 'total_verified_users',
-                'label' => 'Total Pengguna Terverifikasi',
-                'value' => '0',
-                'type' => 'number',
-                'group' => 'statistics',
-                'description' => 'Jumlah pengguna yang telah terverifikasi',
-                'is_public' => true,
-                'sort_order' => 2
-            ],
-            [
-                'key' => 'system_uptime',
-                'label' => 'System Uptime',
-                'value' => '99.9',
-                'type' => 'number',
-                'group' => 'statistics',
-                'description' => 'Persentase uptime sistem',
-                'is_public' => true,
-                'sort_order' => 3
-            ],
-            [
-                'key' => 'total_transactions',
-                'label' => 'Total Transaksi',
-                'value' => '0',
-                'type' => 'number',
-                'group' => 'statistics',
-                'description' => 'Total transaksi yang telah diproses',
-                'is_public' => true,
-                'sort_order' => 4
-            ],
-
-            // Features (Public)
-            [
-                'key' => 'featured_capabilities',
-                'label' => 'Kemampuan Unggulan',
-                'value' => json_encode([
-                    'Modern POS Interface',
-                    'Real-time Analytics',
-                    'Multi-platform Support',
-                    'Advanced Inventory',
-                    'Customer Management',
-                    'Reporting Dashboard'
-                ]),
-                'type' => 'json',
-                'group' => 'features',
-                'description' => 'Daftar kemampuan unggulan sistem',
-                'is_public' => true,
-                'sort_order' => 1
-            ],
-
-            // Social Media (Public)
-            [
-                'key' => 'social_github',
-                'label' => 'GitHub URL',
-                'value' => 'https://github.com/denis156',
-                'type' => 'url',
-                'group' => 'social',
-                'description' => 'URL GitHub',
-                'is_public' => true,
-                'sort_order' => 1
-            ],
-            [
-                'key' => 'social_instagram',
-                'label' => 'Instagram URL',
-                'value' => 'https://www.instagram.com/artelia_development',
-                'type' => 'url',
-                'group' => 'social',
-                'description' => 'URL Instagram',
-                'is_public' => true,
-                'sort_order' => 2
+                'group' => 'business',
+                'description' => 'Tarif pajak dalam persen (contoh: 11 untuk PPN 11%)',
+                'is_public' => false,
+                'sort_order' => 7
             ],
             
-            // Payment Gateway Settings (Private)
+            // Payment Gateway Settings - Tab "Sistem Pembayaran"
             [
                 'key' => 'payment_gateway_enabled',
                 'label' => 'Aktifkan Payment Gateway',
-                'value' => 'false',
+                'value' => '1',
                 'type' => 'boolean',
                 'group' => 'payment',
-                'description' => 'Aktifkan fitur payment gateway',
+                'description' => 'Aktifkan untuk menerima pembayaran digital dari pelanggan',
                 'is_public' => false,
                 'sort_order' => 1
             ],
             [
-                'key' => 'midtrans_server_key',
-                'label' => 'Midtrans Server Key',
+                'key' => 'midtrans_is_production',
+                'label' => 'Mode Production Midtrans',
+                'value' => '0',
+                'type' => 'boolean',
+                'group' => 'payment',
+                'description' => 'OFF = Sandbox (Testing), ON = Production (Live)',
+                'is_public' => false,
+                'sort_order' => 2
+            ],
+            [
+                'key' => 'midtrans_merchant_id',
+                'label' => 'Midtrans Merchant ID',
                 'value' => '',
                 'type' => 'text',
                 'group' => 'payment',
-                'description' => 'Server Key untuk Midtrans Payment Gateway',
+                'description' => 'Merchant ID dari dashboard Midtrans',
                 'is_public' => false,
-                'sort_order' => 2
+                'sort_order' => 3
             ],
             [
                 'key' => 'midtrans_client_key',
@@ -185,91 +122,19 @@ class SettingSeeder extends Seeder
                 'value' => '',
                 'type' => 'text',
                 'group' => 'payment',
-                'description' => 'Client Key untuk Midtrans Payment Gateway',
-                'is_public' => false,
-                'sort_order' => 3
-            ],
-            [
-                'key' => 'midtrans_is_production',
-                'label' => 'Midtrans Production Mode',
-                'value' => 'false',
-                'type' => 'boolean',
-                'group' => 'payment',
-                'description' => 'Aktifkan mode production untuk Midtrans',
+                'description' => 'Key publik untuk frontend integration',
                 'is_public' => false,
                 'sort_order' => 4
             ],
             [
-                'key' => 'xendit_secret_key',
-                'label' => 'Xendit Secret Key',
+                'key' => 'midtrans_server_key',
+                'label' => 'Midtrans Server Key',
                 'value' => '',
                 'type' => 'text',
                 'group' => 'payment',
-                'description' => 'Secret Key untuk Xendit Payment Gateway',
+                'description' => 'Key rahasia untuk server authentication',
                 'is_public' => false,
                 'sort_order' => 5
-            ],
-            [
-                'key' => 'xendit_public_key',
-                'label' => 'Xendit Public Key',
-                'value' => '',
-                'type' => 'text',
-                'group' => 'payment',
-                'description' => 'Public Key untuk Xendit Payment Gateway',
-                'is_public' => false,
-                'sort_order' => 6
-            ],
-            [
-                'key' => 'xendit_callback_token',
-                'label' => 'Xendit Callback Token',
-                'value' => '',
-                'type' => 'text',
-                'group' => 'payment',
-                'description' => 'Callback Token untuk validasi webhook Xendit',
-                'is_public' => false,
-                'sort_order' => 7
-            ],
-            
-            // System Settings (Private)
-            [
-                'key' => 'maintenance_mode',
-                'label' => 'Mode Maintenance',
-                'value' => 'false',
-                'type' => 'boolean',
-                'group' => 'system',
-                'description' => 'Aktifkan mode maintenance',
-                'is_public' => false,
-                'sort_order' => 1
-            ],
-            [
-                'key' => 'default_currency',
-                'label' => 'Mata Uang Default',
-                'value' => 'IDR',
-                'type' => 'text',
-                'group' => 'system',
-                'description' => 'Mata uang default untuk transaksi',
-                'is_public' => false,
-                'sort_order' => 2
-            ],
-            [
-                'key' => 'tax_rate',
-                'label' => 'Tarif Pajak Default',
-                'value' => '11',
-                'type' => 'number',
-                'group' => 'system',
-                'description' => 'Tarif pajak default dalam persen (PPN 11%)',
-                'is_public' => false,
-                'sort_order' => 3
-            ],
-            [
-                'key' => 'auto_backup_enabled',
-                'label' => 'Auto Backup Database',
-                'value' => 'true',
-                'type' => 'boolean',
-                'group' => 'system',
-                'description' => 'Aktifkan backup database otomatis',
-                'is_public' => false,
-                'sort_order' => 4
             ]
         ];
 
