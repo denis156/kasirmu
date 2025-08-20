@@ -6,16 +6,24 @@ namespace App\Livewire\Transaction;
 
 use Mary\Traits\Toast;
 use Livewire\Component;
-use Livewire\Attributes\Title;
 use Livewire\WithPagination;
+use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 #[Title('Daftar Transaksi')]
 class Index extends Component
 {
     use Toast, WithPagination;
+
+    protected $listeners = [
+        'midtransSuccess' => 'handleMidtransSuccess',
+        'midtransPending' => 'handleMidtransPending',
+        'midtransError' => 'handleMidtransError',
+        'midtransClose' => 'handleMidtransClose'
+    ];
 
     public string $search = '';
     public array $sortBy = ['column' => 'transaction_date', 'direction' => 'desc'];
@@ -160,21 +168,105 @@ class Index extends Component
 
     public function getPaymentMethodFilterOptions(): array
     {
-        return [
-            ['id' => 'tunai', 'name' => 'Tunai'],
-            ['id' => 'kartu', 'name' => 'Kartu'],
-            ['id' => 'transfer', 'name' => 'Transfer'],
-            ['id' => 'qris', 'name' => 'QRIS'],
-        ];
+        $options = [];
+        $paymentMethods = \App\Models\Transaction::getPaymentMethods();
+        
+        foreach ($paymentMethods as $id => $name) {
+            $options[] = ['id' => $id, 'name' => $name];
+        }
+        
+        return $options;
     }
 
     public function getStatusFilterOptions(): array
     {
-        return [
-            ['id' => 'menunggu', 'name' => 'Menunggu'],
-            ['id' => 'selesai', 'name' => 'Selesai'],
-            ['id' => 'dibatalkan', 'name' => 'Dibatalkan'],
-        ];
+        $options = [];
+        $statuses = \App\Models\Transaction::getStatuses();
+        
+        foreach ($statuses as $id => $name) {
+            $options[] = ['id' => $id, 'name' => $name];
+        }
+        
+        return $options;
+    }
+
+    public function continuePayment($transactionId): void
+    {
+        try {
+            // Cek apakah payment gateway aktif
+            $paymentGatewayEnabled = \App\Models\Setting::get('payment_gateway_enabled', false);
+            if (!$paymentGatewayEnabled) {
+                $this->error('Payment gateway tidak aktif. Hubungi administrator.');
+                return;
+            }
+
+            // Optimisasi: gunakan Eloquent dengan eager loading
+            $transaction = \App\Models\Transaction::with(['items', 'user'])
+                ->where('id', $transactionId)
+                ->where('status', 'menunggu')
+                ->first();
+
+            if (!$transaction) {
+                $this->error('Transaksi tidak ditemukan atau sudah selesai.');
+                return;
+            }
+
+            // Hitung subtotal dan tax dari relationship yang sudah di-load
+            $subtotal = $transaction->items->sum(function ($item) {
+                return $item->unit_price * $item->quantity;
+            });
+            $taxAmount = $subtotal * ($transaction->tax_rate / 100);
+
+            // Prepare transaction data untuk modal dengan data yang sudah optimal
+            $transactionData = [
+                'items' => $transaction->items->map(function ($item) {
+                    return [
+                        'product_id' => $item->product_id,
+                        'name' => $item->product_name,
+                        'sku' => $item->product_sku,
+                        'price' => $item->unit_price,
+                        'quantity' => $item->quantity
+                    ];
+                })->toArray(),
+                'total' => $transaction->total_amount,
+                'subtotal' => $subtotal,
+                'tax_rate' => $transaction->tax_rate,
+                'tax_amount' => $taxAmount,
+                'discount_amount' => $transaction->discount_amount,
+                'payment_method' => $transaction->payment_method,
+                'notes' => $transaction->notes ?? '',
+                'transaction_id' => $transaction->id,
+                'transaction_code' => $transaction->transaction_code
+            ];
+
+            // Open Midtrans modal
+            $this->dispatch('openMidtransModal', $transactionData);
+
+        } catch (\Exception $e) {
+            $this->error('Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function handleMidtransSuccess($result): void
+    {
+        $message = $result['message'] ?? 'Pembayaran berhasil! Transaksi telah dikonfirmasi.';
+        $this->success($message);
+    }
+
+    public function handleMidtransPending($result): void
+    {
+        $message = $result['message'] ?? 'Pembayaran sedang diproses. Status akan diperbarui otomatis.';
+        $this->info($message);
+    }
+
+    public function handleMidtransError($errorMessage): void
+    {
+        $this->error($errorMessage);
+    }
+
+    public function handleMidtransClose($message): void
+    {
+        $this->info($message ?? 'Pembayaran dibatalkan.');
     }
 
     public function render()

@@ -69,3 +69,23 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/pengaturan', \App\Livewire\Settings::class)
         ->name('settings');
 });
+
+// Midtrans Webhook & Redirects (tanpa auth middleware)
+Route::post('/webhook/midtrans', [App\Http\Controllers\Api\MidtransWebhookController::class, 'handle'])
+    ->name('webhook.midtrans');
+
+Route::post('/webhook/midtrans/recurring', [App\Http\Controllers\Api\MidtransRedirectController::class, 'recurring'])
+    ->name('webhook.midtrans.recurring');
+
+Route::post('/webhook/midtrans/pay-account', [App\Http\Controllers\Api\MidtransRedirectController::class, 'payAccount'])
+    ->name('webhook.midtrans.payaccount');
+
+// Midtrans Redirect URLs
+Route::get('/payment/finish', [App\Http\Controllers\Api\MidtransRedirectController::class, 'finish'])
+    ->name('payment.finish');
+
+Route::get('/payment/unfinish', [App\Http\Controllers\Api\MidtransRedirectController::class, 'unfinish'])
+    ->name('payment.unfinish');
+
+Route::get('/payment/error', [App\Http\Controllers\Api\MidtransRedirectController::class, 'error'])
+    ->name('payment.error');

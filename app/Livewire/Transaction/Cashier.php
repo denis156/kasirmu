@@ -13,7 +13,6 @@ use App\Models\Transaction;
 use Livewire\Attributes\Title;
 use App\Models\TransactionItem;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 #[Title('Kasir')]
@@ -27,7 +26,7 @@ class Cashier extends Component
     public float $total = 0;
     public float $paidAmount = 0;
     public float $changeAmount = 0;
-    public string $paymentMethod = 'tunai';
+    public string $paymentMethod = ''; // Kosongkan default
     public string $notes = '';
     public float $taxRate = 0.0;
     public float $discountAmount = 0.0;
@@ -35,10 +34,14 @@ class Cashier extends Component
 
     public bool $paymentModal = false;
     public bool $showFilterDrawer = false;
-
+    public ?string $snapToken = null;
 
     protected $listeners = [
-        'addToCart' => 'addToCart'
+        'addToCart' => 'addToCart',
+        'midtransSuccess' => 'handleMidtransSuccess',
+        'midtransPending' => 'handleMidtransPending', 
+        'midtransError' => 'handleMidtransError',
+        'midtransClose' => 'handleMidtransClose'
     ];
 
     public function mount(): void
@@ -122,7 +125,7 @@ class Cashier extends Component
         });
 
         $taxAmount = $subtotal * ((float) $this->taxRate / 100);
-        
+
         // Handle money input yang mungkin berupa string dengan format ribuan
         $discountValue = $this->discountAmount;
         if (is_string($discountValue)) {
@@ -131,7 +134,7 @@ class Cashier extends Component
         } else {
             $discountValue = (float) $discountValue;
         }
-        
+
         // Total = Subtotal + Pajak - Diskon (diskon mengurangi total)
         // Biarkan bisa minus jika diskon lebih besar dari subtotal+pajak
         $this->total = $subtotal + $taxAmount - $discountValue;
@@ -144,13 +147,9 @@ class Cashier extends Component
             return;
         }
 
-        // Set default paid amount berdasarkan payment method
-        if ($this->paymentMethod === 'tunai') {
-            $this->paidAmount = $this->total;
-        } else {
-            $this->paidAmount = 0; // Untuk non-tunai tidak perlu input manual
-        }
-        
+        // Reset payment method dan paid amount
+        $this->paymentMethod = '';
+        $this->paidAmount = 0;
         $this->calculateChange();
         $this->paymentModal = true;
     }
@@ -170,6 +169,18 @@ class Cashier extends Component
         $this->calculateTotal();
     }
 
+    public function updatedPaymentMethod(): void
+    {
+        // Set default paid amount berdasarkan payment method
+        if ($this->paymentMethod === 'tunai') {
+            $this->paidAmount = $this->total;
+        } else {
+            $this->paidAmount = 0;
+        }
+
+        $this->calculateChange();
+    }
+
     public function getTaxRateFromSettings(): float
     {
         return (float) Setting::get('tax_rate', 11);
@@ -177,66 +188,33 @@ class Cashier extends Component
 
     public function processPayment(): void
     {
+        // Validasi metode pembayaran dipilih
+        if (empty($this->paymentMethod)) {
+            $this->error('Silakan pilih metode pembayaran.');
+            return;
+        }
+
         // Untuk metode tunai, cek jumlah bayar
         if ($this->paymentMethod === 'tunai' && $this->paidAmount < $this->total) {
             $this->error('Jumlah bayar tidak mencukupi.');
             return;
         }
-        
-        // Untuk metode non-tunai, set paid amount sama dengan total
-        if ($this->paymentMethod !== 'tunai') {
-            $this->paidAmount = $this->total;
-            $this->changeAmount = 0;
-        }
 
-        if (!Auth::check()) {
-            $this->error('Anda harus login terlebih dahulu.');
+        // Untuk metode non-tunai, gunakan ModalPaymentMidtrans
+        if ($this->paymentMethod !== 'tunai') {
+            // Prepare transaction data untuk modal
+            $transactionData = $this->prepareTransactionData();
+            
+            // Tutup modal payment dulu
+            $this->paymentModal = false;
+
+            // Dispatch event untuk membuka ModalPaymentMidtrans
+            $this->dispatch('openMidtransModal', $transactionData);
             return;
         }
 
-        try {
-            DB::beginTransaction();
-
-            $transaction = Transaction::create([
-                'transaction_code' => Transaction::generateTransactionCode(),
-                'user_id' => Auth::id(),
-                'tax_rate' => $this->taxRate,
-                'discount_amount' => $this->discountAmount,
-                'total_amount' => $this->total,
-                'paid_amount' => $this->paidAmount,
-                'change_amount' => $this->changeAmount,
-                'payment_method' => $this->paymentMethod,
-                'status' => 'selesai',
-                'notes' => $this->notes,
-                'transaction_date' => now(),
-            ]);
-
-            foreach ($this->cart as $item) {
-                TransactionItem::create([
-                    'transaction_id' => $transaction->id,
-                    'product_id' => $item['product_id'],
-                    'product_name' => $item['name'],
-                    'product_sku' => $item['sku'],
-                    'unit_price' => $item['price'],
-                    'quantity' => $item['quantity'],
-                ]);
-
-                $product = Product::find($item['product_id']);
-                $product->stock -= $item['quantity'];
-                $product->terjual += $item['quantity'];
-                $product->save();
-            }
-
-            DB::commit();
-
-            $this->success('Transaksi berhasil diproses.');
-            $this->resetTransaction();
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Payment Error: ' . $e->getMessage());
-            $this->error('Terjadi kesalahan saat memproses transaksi: ' . $e->getMessage());
-        }
+        // Untuk tunai, langsung proses dengan status selesai
+        $this->createTransaction('selesai');
     }
 
     public function resetTransaction(): void
@@ -245,14 +223,13 @@ class Cashier extends Component
         $this->total = 0;
         $this->paidAmount = 0;
         $this->changeAmount = 0;
-        $this->paymentMethod = 'tunai';
+        $this->paymentMethod = ''; // Reset ke kosong
         $this->notes = '';
         // Ambil tax rate dari settings, jangan direset ke 0
         $this->taxRate = (float) Setting::get('tax_rate', 11);
         $this->discountAmount = 0;
         $this->paymentModal = false;
     }
-
 
     // Products List Methods
     public function getProductsProperty()
@@ -274,10 +251,10 @@ class Cashier extends Component
             ->where('products.stock', '>', 0);
 
         if ($this->search) {
-            $query->where(function($q) {
+            $query->where(function ($q) {
                 $q->where('products.name', 'like', '%' . $this->search . '%')
-                  ->orWhere('products.sku', 'like', '%' . $this->search . '%')
-                  ->orWhere('products.barcode', 'like', '%' . $this->search . '%');
+                    ->orWhere('products.sku', 'like', '%' . $this->search . '%')
+                    ->orWhere('products.barcode', 'like', '%' . $this->search . '%');
             });
         }
 
@@ -286,26 +263,26 @@ class Cashier extends Component
         }
 
         return $query->orderBy('products.name')
-                    ->limit($this->productsLimit)
-                    ->get()
-                    ->map(function ($product) {
-                        $product->price_formatted = 'Rp ' . number_format((float) $product->price, 2, ',', '.');
+            ->limit($this->productsLimit)
+            ->get()
+            ->map(function ($product) {
+                $product->price_formatted = 'Rp ' . number_format((float) $product->price, 2, ',', '.');
 
-                        // Calculate remaining stock after cart items
-                        $cartQuantity = collect($this->cart)->where('product_id', $product->id)->sum('quantity');
-                        $product->available_stock = $product->stock - $cartQuantity;
+                // Calculate remaining stock after cart items
+                $cartQuantity = collect($this->cart)->where('product_id', $product->id)->sum('quantity');
+                $product->available_stock = $product->stock - $cartQuantity;
 
-                        return $product;
-                    });
+                return $product;
+            });
     }
 
     public function getCategoriesProperty()
     {
         return DB::table('categories')
-                  ->select('id', 'name')
-                  ->where('is_active', true)
-                  ->orderBy('name')
-                  ->get();
+            ->select('id', 'name')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
     }
 
     public function getTotalProductsCountProperty()
@@ -315,10 +292,10 @@ class Cashier extends Component
             ->where('stock', '>', 0);
 
         if ($this->search) {
-            $query->where(function($q) {
+            $query->where(function ($q) {
                 $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('sku', 'like', '%' . $this->search . '%')
-                  ->orWhere('barcode', 'like', '%' . $this->search . '%');
+                    ->orWhere('sku', 'like', '%' . $this->search . '%')
+                    ->orWhere('barcode', 'like', '%' . $this->search . '%');
             });
         }
 
@@ -328,7 +305,6 @@ class Cashier extends Component
 
         return $query->count();
     }
-
 
     public function loadMoreProducts(): void
     {
@@ -355,16 +331,153 @@ class Cashier extends Component
 
         // Cek apakah payment gateway diaktifkan
         $paymentGatewayEnabled = Setting::get('payment_gateway_enabled', false);
-        
+
         if ($paymentGatewayEnabled) {
-            $methods = array_merge($methods, [
-                ['id' => 'kartu', 'name' => 'Kartu'],
-                ['id' => 'transfer', 'name' => 'Transfer'],
-                ['id' => 'qris', 'name' => 'QRIS'],
-            ]);
+            // Menggunakan data dari model Transaction
+            $paymentMethods = Transaction::getPaymentMethods();
+            
+            // Skip tunai karena sudah ditambahkan di atas
+            foreach ($paymentMethods as $id => $name) {
+                if ($id !== 'tunai') {
+                    $methods[] = ['id' => $id, 'name' => $name];
+                }
+            }
         }
 
         return $methods;
+    }
+
+    private function prepareTransactionData(): array
+    {
+        $subtotal = collect($this->cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+        $taxAmount = $subtotal * ($this->taxRate / 100);
+        
+        $discountValue = is_string($this->discountAmount) 
+            ? (float) str_replace(',', '', $this->discountAmount)
+            : (float) $this->discountAmount;
+
+        return [
+            'items' => $this->cart,
+            'total' => $this->total,
+            'subtotal' => $subtotal,
+            'tax_rate' => $this->taxRate,
+            'tax_amount' => $taxAmount,
+            'discount_amount' => $discountValue,
+            'payment_method' => $this->paymentMethod,
+            'notes' => $this->notes
+        ];
+    }
+
+
+    public function handleMidtransSuccess($result): void
+    {
+        try {
+            if (isset($result['create_transaction']) && $result['create_transaction']) {
+                // Set payment details from Midtrans response
+                $this->paidAmount = $this->total;
+                $this->changeAmount = 0;
+
+                // Create transaction dengan status yang ditentukan modal
+                $status = $result['status'] ?? 'selesai';
+                $midtransResult = $result['midtrans_result'] ?? [];
+                $this->createTransaction($status, $midtransResult);
+            } else {
+                // Hanya tampilkan pesan jika tidak perlu create transaction
+                $message = $result['message'] ?? 'Pembayaran berhasil!';
+                $this->success($message);
+            }
+        } catch (\Exception $e) {
+            $this->error('Terjadi kesalahan saat memproses transaksi.');
+        }
+    }
+
+    public function handleMidtransPending($result): void
+    {
+        try {
+            if (isset($result['create_transaction']) && $result['create_transaction']) {
+                // Set payment details
+                $this->paidAmount = $this->total;
+                $this->changeAmount = 0;
+
+                // Create transaction dengan status pending
+                $status = $result['status'] ?? 'menunggu';
+                $midtransResult = $result['midtrans_result'] ?? [];
+                $this->createTransaction($status, $midtransResult);
+            } else {
+                // Hanya tampilkan pesan
+                $message = $result['message'] ?? 'Pembayaran sedang diproses.';
+                $this->info($message);
+            }
+        } catch (\Exception $e) {
+            $this->error('Terjadi kesalahan saat memproses transaksi.');
+        }
+    }
+
+    public function handleMidtransError($errorMessage): void
+    {
+        $this->error($errorMessage);
+        // Buka kembali modal payment untuk retry
+        $this->paymentModal = true;
+    }
+
+    public function handleMidtransClose($message): void
+    {
+        $this->info($message);
+        // Buka kembali modal payment jika user membatalkan
+        $this->paymentModal = true;
+    }
+
+    private function createTransaction(string $status, array $midtransResult = []): void
+    {
+        if (!Auth::check()) {
+            $this->error('Anda harus login terlebih dahulu.');
+            return;
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $transaction = Transaction::create([
+                'transaction_code' => Transaction::generateTransactionCode(),
+                'user_id' => Auth::id(),
+                'tax_rate' => $this->taxRate,
+                'discount_amount' => $this->discountAmount,
+                'total_amount' => $this->total,
+                'paid_amount' => $this->paidAmount,
+                'change_amount' => $this->changeAmount,
+                'payment_method' => $this->paymentMethod,
+                'status' => $status,
+                'notes' => $this->notes . (!empty($midtransResult) ? ' | Midtrans Order ID: ' . ($midtransResult['order_id'] ?? 'N/A') : ''),
+                'transaction_date' => now(),
+            ]);
+
+            foreach ($this->cart as $item) {
+                TransactionItem::create([
+                    'transaction_id' => $transaction->id,
+                    'product_id' => $item['product_id'],
+                    'product_name' => $item['name'],
+                    'product_sku' => $item['sku'],
+                    'unit_price' => $item['price'],
+                    'quantity' => $item['quantity'],
+                ]);
+
+                // Update stock hanya jika status selesai
+                if ($status === 'selesai') {
+                    $product = Product::find($item['product_id']);
+                    $product->stock -= $item['quantity'];
+                    $product->terjual += $item['quantity'];
+                    $product->save();
+                }
+            }
+
+            DB::commit();
+
+            $this->success('Transaksi berhasil diproses dengan status: ' . $status);
+            $this->resetTransaction();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->error('Terjadi kesalahan saat menyimpan transaksi: ' . $e->getMessage());
+        }
     }
 
     public function render()

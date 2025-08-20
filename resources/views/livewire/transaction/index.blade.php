@@ -44,46 +44,29 @@
                 </span>
             @endscope
             @scope('cell_payment_method', $transaction)
-                @php
-                    $methodClass = match ($transaction->payment_method) {
-                        'tunai' => 'badge-success',
-                        'kartu' => 'badge-info',
-                        'transfer' => 'badge-warning',
-                        'qris' => 'badge-primary',
-                        default => 'badge-neutral',
-                    };
-                    $methodLabel = match ($transaction->payment_method) {
-                        'tunai' => 'Tunai',
-                        'kartu' => 'Kartu',
-                        'transfer' => 'Transfer',
-                        'qris' => 'QRIS',
-                        default => $transaction->payment_method,
-                    };
-                @endphp
-                <x-badge value="{{ $methodLabel }}" class="badge-sm badge-soft {{ $methodClass }}" />
+                <x-badge 
+                    value="{{ \App\Models\Transaction::getPaymentMethods()[$transaction->payment_method] ?? ucfirst($transaction->payment_method) }}" 
+                    class="badge-sm badge-soft {{ \App\Models\Transaction::getPaymentMethodBadgeClass($transaction->payment_method) }}" />
             @endscope
             @scope('cell_status', $transaction)
-                @php
-                    $statusClass = match ($transaction->status) {
-                        'selesai' => 'badge-success',
-                        'menunggu' => 'badge-warning',
-                        'dibatalkan' => 'badge-error',
-                        default => 'badge-neutral',
-                    };
-                    $statusLabel = match ($transaction->status) {
-                        'selesai' => 'Selesai',
-                        'menunggu' => 'Menunggu',
-                        'dibatalkan' => 'Dibatalkan',
-                        default => $transaction->status,
-                    };
-                @endphp
-                <x-badge value="{{ $statusLabel }}" class="badge-sm badge-soft {{ $statusClass }}" />
+                <x-badge 
+                    value="{{ \App\Models\Transaction::getStatuses()[$transaction->status] ?? ucfirst($transaction->status) }}" 
+                    class="badge-sm badge-soft {{ \App\Models\Transaction::getStatusBadgeClass($transaction->status) }}" />
             @endscope
             @scope('cell_transaction_date', $transaction)
                 <span class="text-sm">{{ $transaction->transaction_date_formatted }}</span>
             @endscope
             @scope('actions', $transaction)
                 <div class="flex gap-2">
+                    @if($transaction->status === 'menunggu')
+                        <x-button 
+                            icon="phosphor.credit-card" 
+                            wire:click="continuePayment({{ $transaction->id }})" 
+                            spinner
+                            class="btn-sm btn-outline btn-primary" 
+                            label="Bayar" 
+                            responsive />
+                    @endif
                     <x-button icon="phosphor.trash" wire:click="showDeleteModal({{ $transaction->id }})" spinner
                         class="btn-sm btn-outline btn-error" label="Hapus" responsive />
                 </div>
@@ -132,4 +115,7 @@
             <x-button label="Tutup" icon="phosphor.check" class="btn-primary" @click="$wire.drawer = false" />
         </x-slot:actions>
     </x-drawer>
+
+    <!-- Midtrans Payment Modal Component -->
+    <livewire:components.modal-payment-midtrans />
 </div>

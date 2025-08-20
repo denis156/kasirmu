@@ -12,18 +12,18 @@
                 <x-header title="Keranjang Belanja" subtitle="Daftar item yang dipilih" icon="phosphor.shopping-cart"
                     icon-classes="bg-primary rounded-full p-1 w-8 h-8" separator>
                     <x-slot:actions>
-                        @if(count($cart) > 0)
-                            <x-button icon="phosphor.trash" class="btn-sm btn-error btn-outline"
-                                wire:click="clearCart" label="Kosongkan" responsive />
+                        @if (count($cart) > 0)
+                            <x-button icon="phosphor.trash" class="btn-sm btn-error btn-outline" wire:click="clearCart"
+                                label="Kosongkan" responsive />
                         @endif
                     </x-slot:actions>
                 </x-header>
 
                 <!-- Cart Items -->
                 <div class="max-h-80 overflow-y-auto">
-                    @if(count($cart) > 0)
+                    @if (count($cart) > 0)
                         <div class="space-y-3">
-                            @foreach($cart as $index => $item)
+                            @foreach ($cart as $index => $item)
                                 <div class="flex items-center justify-between p-3 border rounded-lg bg-base-50">
                                     <div class="flex-1">
                                         <h4 class="font-medium text-sm">{{ $item['name'] }}</h4>
@@ -57,24 +57,25 @@
                 </div>
 
                 <!-- Cart Summary -->
-                @if(count($cart) > 0)
+                @if (count($cart) > 0)
                     <div class="border-t pt-4 mt-4 space-y-3">
                         <div class="grid grid-cols-2 gap-2">
-                            <x-input label="Pajak (%)" wire:model="taxRate" type="number"
-                                step="0.01" min="0" max="100" class="input-sm" readonly />
-                            <x-input label="Diskon (Rp)" wire:model.live="discountAmount"
-                                prefix="Rp" locale="id-ID" money class="input-sm" />
+                            <x-input label="Pajak (%)" wire:model="taxRate" type="number" step="0.01" min="0"
+                                max="100" class="input-sm" readonly />
+                            <x-input label="Diskon (Rp)" wire:model.live="discountAmount" prefix="Rp" locale="id-ID"
+                                money class="input-sm" />
                         </div>
 
                         <div class="bg-primary/10 p-3 rounded-lg">
                             <div class="flex justify-between font-bold text-lg">
                                 <span>Total:</span>
-                                <span class="{{ $total < 0 ? 'text-error' : 'text-primary' }}">Rp {{ number_format($total, 2, ',', '.') }}</span>
+                                <span class="{{ $total < 0 ? 'text-error' : 'text-primary' }}">Rp
+                                    {{ number_format($total, 2, ',', '.') }}</span>
                             </div>
                         </div>
 
-                        <x-button label="Bayar" icon="phosphor.currency-circle-dollar"
-                            class="btn-success w-full" wire:click="showPaymentModal" />
+                        <x-button label="Bayar" icon="phosphor.currency-circle-dollar" class="btn-success w-full"
+                            wire:click="showPaymentModal" />
                     </div>
                 @endif
             </x-card>
@@ -82,8 +83,8 @@
     </div>
 
     <!-- Payment Modal -->
-    <x-modal wire:model="paymentModal" class="modal-bottom sm:modal-middle backdrop-blur"
-        title="Proses Pembayaran" persistent>
+    <x-modal wire:model="paymentModal" class="modal-bottom sm:modal-middle backdrop-blur" title="Proses Pembayaran"
+        persistent>
         <div class="space-y-4">
             <!-- Payment Summary -->
             <div class="bg-base-200 p-4 rounded-lg">
@@ -91,15 +92,17 @@
                 <div class="space-y-1 text-sm">
                     <div class="flex justify-between">
                         <span>Subtotal:</span>
-                        <span>Rp {{ number_format(collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']), 2, ',', '.') }}</span>
+                        <span>Rp
+                            {{ number_format(collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']), 2, ',', '.') }}</span>
                     </div>
-                    @if($taxRate > 0)
+                    @if ($taxRate > 0)
                         <div class="flex justify-between">
                             <span>Pajak ({{ $taxRate }}%):</span>
-                            <span>Rp {{ number_format(collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']) * ($taxRate / 100), 2, ',', '.') }}</span>
+                            <span>Rp
+                                {{ number_format(collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']) * ($taxRate / 100), 2, ',', '.') }}</span>
                         </div>
                     @endif
-                    @if($discountAmount > 0)
+                    @if ($discountAmount > 0)
                         <div class="flex justify-between text-success">
                             <span>Diskon:</span>
                             <span>-Rp {{ number_format($discountAmount, 2, ',', '.') }}</span>
@@ -108,7 +111,8 @@
                     <div class="border-t pt-1 mt-2">
                         <div class="flex justify-between font-bold">
                             <span>Total:</span>
-                            <span class="{{ $total < 0 ? 'text-error' : 'text-primary' }}">Rp {{ number_format($total, 2, ',', '.') }}</span>
+                            <span class="{{ $total < 0 ? 'text-error' : 'text-primary' }}">Rp
+                                {{ number_format($total, 2, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>
@@ -117,17 +121,28 @@
             <!-- Payment Details -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="{{ $paymentMethod !== 'tunai' ? 'md:col-span-2' : '' }}">
-                    <x-select label="Metode Pembayaran" wire:model.live="paymentMethod"
-                        :options="$this->getPaymentMethodOptions()" icon="phosphor.credit-card"
-                        option-value="id" option-label="name" />
+                    <x-select
+                        label="Metode Pembayaran"
+                        placeholder="Pilih Metode Pembayaran"
+                        wire:model.live="paymentMethod"
+                        :options="$this->getPaymentMethodOptions()"
+                        icon="phosphor.credit-card"
+                        option-value="id"
+                        option-label="name"
+                        required />
                 </div>
-                @if($paymentMethod === 'tunai')
-                    <x-input label="Jumlah Bayar" wire:model.live="paidAmount"
-                        prefix="Rp" locale="id-ID" money required />
+                @if ($paymentMethod === 'tunai')
+                    <x-input
+                        label="Jumlah Bayar"
+                        wire:model.live="paidAmount"
+                        prefix="Rp"
+                        locale="id-ID"
+                        money
+                        required />
                 @endif
             </div>
 
-            @if($paymentMethod === 'tunai' && $paidAmount > 0)
+            @if ($paymentMethod === 'tunai' && $paidAmount > 0)
                 <div class="bg-info/10 p-4 rounded-lg">
                     <div class="flex justify-between items-center">
                         <span class="font-medium">Kembalian:</span>
@@ -138,16 +153,35 @@
                 </div>
             @endif
 
-            <x-textarea label="Catatan (Opsional)" wire:model="notes"
-                placeholder="Catatan untuk transaksi ini..." rows="2" />
+            @if ($paymentMethod && $paymentMethod !== 'tunai')
+                <div class="bg-info/10 p-4 rounded-lg border-l-4 border-info">
+                    <div class="flex">
+                        <x-icon name="phosphor.credit-card" class="w-5 h-5 text-info mr-2 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <p class="text-sm font-medium text-base-content">Metode Pembayaran Digital {{ ucfirst($paymentMethod) }}</p>
+                            <p class="text-xs text-base-content/80 mt-1">
+                                Popup pembayaran akan muncul setelah Anda menekan "Proses Pembayaran"
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <x-textarea label="Catatan (Opsional)" wire:model="notes" placeholder="Catatan untuk transaksi ini..."
+                rows="2" />
         </div>
 
         <x-slot:actions>
-            <x-button label="Batal" icon="phosphor.x" class="btn-soft"
-                @click="$wire.paymentModal = false" />
-            <x-button label="Proses Pembayaran" icon="phosphor.check"
-                class="btn-success" wire:click="processPayment"
-                :disabled="$paymentMethod === 'tunai' ? $paidAmount < $total : false" />
+            <x-button label="Batal" icon="phosphor.x" class="btn-soft" @click="$wire.paymentModal = false" />
+            <x-button
+                label="Proses Pembayaran"
+                icon="phosphor.check"
+                class="btn-success"
+                wire:click="processPayment"
+                :disabled="empty($paymentMethod) || ($paymentMethod === 'tunai' && $paidAmount < $total)" />
         </x-slot:actions>
     </x-modal>
+
+    <!-- Midtrans Payment Modal Component -->
+    <livewire:components.modal-payment-midtrans />
 </div>
