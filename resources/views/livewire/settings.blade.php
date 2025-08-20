@@ -141,23 +141,85 @@
                             <div class="mt-6 p-4 bg-base-200 rounded-lg border border-base-content/10">
                                 <h4 class="font-semibold text-base-content mb-2 flex items-center">
                                     <x-icon name="phosphor.webhooks-logo" class="w-5 h-5 mr-2" />
-                                    Webhook Configuration
+                                    Konfigurasi URL Midtrans
                                 </h4>
-                                <p class="text-sm text-base-content/70 mb-3">
-                                    Copy URL berikut ke Payment Notification URL di dashboard Midtrans untuk
-                                    sinkronisasi otomatis status pembayaran:
+                                <p class="text-sm text-base-content/70 mb-4">
+                                    Copy URL berikut ke dashboard Midtrans sesuai dengan jenisnya:
                                 </p>
-                                <x-input value="{{ url('/webhook/midtrans') }}" readonly
-                                    class="font-mono text-sm" icon="phosphor.webhooks-logo"
-                                    label="Webhook URL">
-                                    <x-slot:append>
-                                        <x-button icon="phosphor.copy" class="join-item btn-primary"
-                                            label="Salin URL"
-                                            onclick="navigator.clipboard.writeText('{{ url('/webhook/midtrans') }}');
-                                            window.dispatchEvent(new CustomEvent('success', {detail: 'URL webhook berhasil disalin!'}));"
-                                            tooltip="Copy webhook URL" />
-                                    </x-slot:append>
-                                </x-input>
+                                
+                                <div class="space-y-4">
+                                    <!-- Payment Notification URL -->
+                                    <x-input value="{{ url('/webhook/midtrans') }}" readonly
+                                        class="font-mono text-sm" icon="phosphor.webhooks-logo"
+                                        label="Payment Notification URL">
+                                        <x-slot:append>
+                                            <x-button icon="phosphor.copy" class="join-item btn-primary"
+                                                onclick="navigator.clipboard.writeText('{{ url('/webhook/midtrans') }}');
+                                                window.dispatchEvent(new CustomEvent('success', {detail: 'Payment Notification URL berhasil disalin!'}));"
+                                                tooltip="Copy Payment Notification URL" />
+                                        </x-slot:append>
+                                    </x-input>
+
+                                    <!-- Recurring Notification URL -->
+                                    <x-input value="{{ url('/webhook/midtrans/recurring') }}" readonly
+                                        class="font-mono text-sm" icon="phosphor.clock-clockwise"
+                                        label="Recurring Notification URL">
+                                        <x-slot:append>
+                                            <x-button icon="phosphor.copy" class="join-item btn-secondary"
+                                                onclick="navigator.clipboard.writeText('{{ url('/webhook/midtrans/recurring') }}');
+                                                window.dispatchEvent(new CustomEvent('success', {detail: 'Recurring Notification URL berhasil disalin!'}));"
+                                                tooltip="Copy Recurring Notification URL" />
+                                        </x-slot:append>
+                                    </x-input>
+
+                                    <!-- Pay Account Notification URL -->
+                                    <x-input value="{{ url('/webhook/midtrans/pay-account') }}" readonly
+                                        class="font-mono text-sm" icon="phosphor.user-circle"
+                                        label="Pay Account Notification URL">
+                                        <x-slot:append>
+                                            <x-button icon="phosphor.copy" class="join-item btn-accent"
+                                                onclick="navigator.clipboard.writeText('{{ url('/webhook/midtrans/pay-account') }}');
+                                                window.dispatchEvent(new CustomEvent('success', {detail: 'Pay Account Notification URL berhasil disalin!'}));"
+                                                tooltip="Copy Pay Account Notification URL" />
+                                        </x-slot:append>
+                                    </x-input>
+
+                                    <!-- Finish Redirect URL -->
+                                    <x-input value="{{ url('/payment/finish') }}" readonly
+                                        class="font-mono text-sm" icon="phosphor.check-circle"
+                                        label="Finish Redirect URL">
+                                        <x-slot:append>
+                                            <x-button icon="phosphor.copy" class="join-item btn-success"
+                                                onclick="navigator.clipboard.writeText('{{ url('/payment/finish') }}');
+                                                window.dispatchEvent(new CustomEvent('success', {detail: 'Finish Redirect URL berhasil disalin!'}));"
+                                                tooltip="Copy Finish Redirect URL" />
+                                        </x-slot:append>
+                                    </x-input>
+
+                                    <!-- Unfinish Redirect URL -->
+                                    <x-input value="{{ url('/payment/unfinish') }}" readonly
+                                        class="font-mono text-sm" icon="phosphor.warning-circle"
+                                        label="Unfinish Redirect URL">
+                                        <x-slot:append>
+                                            <x-button icon="phosphor.copy" class="join-item btn-warning"
+                                                onclick="navigator.clipboard.writeText('{{ url('/payment/unfinish') }}');
+                                                window.dispatchEvent(new CustomEvent('success', {detail: 'Unfinish Redirect URL berhasil disalin!'}));"
+                                                tooltip="Copy Unfinish Redirect URL" />
+                                        </x-slot:append>
+                                    </x-input>
+
+                                    <!-- Error Redirect URL -->
+                                    <x-input value="{{ url('/payment/error') }}" readonly
+                                        class="font-mono text-sm" icon="phosphor.x-circle"
+                                        label="Error Redirect URL">
+                                        <x-slot:append>
+                                            <x-button icon="phosphor.copy" class="join-item btn-error"
+                                                onclick="navigator.clipboard.writeText('{{ url('/payment/error') }}');
+                                                window.dispatchEvent(new CustomEvent('success', {detail: 'Error Redirect URL berhasil disalin!'}));"
+                                                tooltip="Copy Error Redirect URL" />
+                                        </x-slot:append>
+                                    </x-input>
+                                </div>
                             </div>
                         @endif
 
