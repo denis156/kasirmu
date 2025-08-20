@@ -22,8 +22,8 @@ return new class extends Migration
             $table->decimal('total_amount', 12, 2);
             $table->decimal('paid_amount', 12, 2);
             $table->decimal('change_amount', 12, 2)->default(0);
-            $table->enum('payment_method', ['tunai', 'kartu', 'transfer', 'qris']);
-            $table->enum('status', ['menunggu', 'selesai', 'dibatalkan'])->default('menunggu');
+            $table->string('payment_method', 50)->default('tunai');
+            $table->string('status', 50)->default('menunggu');
             $table->text('notes')->nullable();
             $table->timestamp('transaction_date');
             $table->timestamps();

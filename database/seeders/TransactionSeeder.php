@@ -33,8 +33,17 @@ class TransactionSeeder extends Seeder
                 'total_amount' => 0, // akan dihitung nanti
                 'paid_amount' => 0, // akan dihitung nanti
                 'change_amount' => 0, // akan dihitung nanti
-                'payment_method' => collect(['tunai', 'kartu', 'transfer', 'qris'])->random(),
-                'status' => 'selesai',
+                'payment_method' => collect([
+                    'tunai', 
+                    'kartu', 
+                    'transfer', 
+                    'qris', 
+                    'ewallet', 
+                    'semua',
+                    'gopay',
+                    'shopeepay'
+                ])->random(),
+                'status' => collect(['selesai', 'menunggu', 'dibatalkan'])->random(),
                 'notes' => rand(0, 5) > 3 ? 'Transaksi normal' : null,
                 'transaction_date' => $transactionDate,
                 'created_at' => $transactionDate,
