@@ -33,7 +33,7 @@
 
             {{-- Brand --}}
             <div class="text-md sm:text-lg md:text-xl font-bold">{{ config('app.name') }}</div>
-            <x-theme-toggle class="btn btn-circle btn-ghost ml-2" @theme-changed="console.log($event.detail)" />
+            <x-theme-toggle class="btn btn-circle btn-ghost ml-2" />
         </x-slot:brand>
 
         {{-- Right side actions --}}
