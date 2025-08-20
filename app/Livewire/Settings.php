@@ -156,7 +156,7 @@ class Settings extends Component
                 'id' => null,
                 'key' => 'payment_gateway_enabled',
                 'label' => 'Aktifkan Payment Gateway',
-                'value' => 'false',
+                'value' => '0',
                 'type' => 'boolean',
                 'description' => 'Aktifkan fitur payment gateway',
                 'is_public' => false
@@ -192,7 +192,7 @@ class Settings extends Component
                 'id' => null,
                 'key' => 'midtrans_is_production',
                 'label' => 'Midtrans Production Mode',
-                'value' => 'false',
+                'value' => '0',
                 'type' => 'boolean',
                 'description' => 'Aktifkan mode production untuk Midtrans',
                 'is_public' => false
@@ -339,12 +339,42 @@ class Settings extends Component
         ];
     }
 
-    public function getMidtransModeOptions(): array
+    // Tidak diperlukan lagi karena menggunakan toggle
+    // public function getMidtransModeOptions(): array
+    // public function getPaymentGatewayOptions(): array
+
+    public function updatedPaymentSettings($value, $key)
     {
-        return [
-            ['id' => '0', 'name' => 'Sandbox (Testing)'],
-            ['id' => '1', 'name' => 'Production (Live)']
-        ];
+        // Trigger saat ada perubahan di paymentSettings
+        if ($key === 'midtrans_is_production.value') {
+            $this->dispatch('midtransModeChanged', $value);
+        }
+        
+        if ($key === 'payment_gateway_enabled.value') {
+            $this->dispatch('paymentGatewayToggled', $value);
+        }
+    }
+
+
+    public function testMidtransConnection()
+    {
+        try {
+            $midtrans = app('midtrans');
+            $serverKey = $midtrans->getServerKey();
+            $clientKey = $midtrans->getClientKey();
+            $isProduction = $midtrans->isProduction();
+
+            if (empty($serverKey) || empty($clientKey)) {
+                $this->error('Server Key atau Client Key belum diisi!');
+                return;
+            }
+
+            $mode = $isProduction ? 'Production' : 'Sandbox';
+            $this->success("Koneksi Midtrans berhasil! Mode: {$mode}");
+
+        } catch (\Exception $e) {
+            $this->error('Gagal terhubung ke Midtrans: ' . $e->getMessage());
+        }
     }
 
     public function render()
