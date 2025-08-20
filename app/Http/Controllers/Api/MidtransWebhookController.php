@@ -16,7 +16,19 @@ class MidtransWebhookController extends Controller
 {
     public function handle(Request $request): JsonResponse
     {
+        // Log incoming webhook untuk debug
+        Log::info('Midtrans Webhook Received', [
+            'request_body' => $request->all(),
+            'headers' => $request->headers->all()
+        ]);
+
         try {
+            // Handle test requests
+            if ($request->has('test')) {
+                Log::info('Midtrans Webhook Test', ['data' => $request->all()]);
+                return response()->json(['status' => 'test_ok', 'message' => 'Test webhook berhasil']);
+            }
+
             // Configure Midtrans
             $midtrans = app('midtrans');
             Config::$serverKey = $midtrans->getServerKey();
@@ -31,13 +43,32 @@ class MidtransWebhookController extends Controller
             $fraudStatus = $notification->fraud_status ?? null;
             $paymentType = $notification->payment_type;
 
+            Log::info('Midtrans Webhook Processing', [
+                'order_id' => $orderId,
+                'transaction_status' => $transactionStatus,
+                'fraud_status' => $fraudStatus,
+                'payment_type' => $paymentType
+            ]);
 
-            // Cari transaksi berdasarkan order_id dari notes
-            // Order ID kita simpan di notes sebagai "Midtrans Order ID: ORDER-xxx"
-            $transaction = Transaction::where('notes', 'LIKE', "%Midtrans Order ID: {$orderId}%")
-                ->first();
+            // Cari transaksi berdasarkan transaction_code (untuk Order ID yang sama)
+            // atau dari notes untuk backward compatibility
+            $transaction = Transaction::where(function($query) use ($orderId) {
+                $query->where('transaction_code', $orderId)
+                      ->orWhere('notes', 'LIKE', "%Order ID: {$orderId}%")
+                      ->orWhere('notes', 'LIKE', "%Midtrans Order ID: {$orderId}%")
+                      ->orWhere('notes', 'LIKE', "%Public Order ID: {$orderId}%");
+            })->first();
 
             if (!$transaction) {
+                Log::warning('Midtrans Webhook Transaction Not Found', [
+                    'order_id' => $orderId,
+                    'transaction_status' => $transactionStatus,
+                    'search_patterns' => [
+                        "midtrans" => "%Midtrans Order ID: {$orderId}%",
+                        "public" => "%Public Order ID: {$orderId}%"
+                    ]
+                ]);
+                
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Transaction not found'
@@ -61,13 +92,16 @@ class MidtransWebhookController extends Controller
         } catch (\Exception $e) {
             Log::error('Midtrans Webhook Error', [
                 'error' => $e->getMessage(),
-                'request_data' => $request->all()
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all(),
+                'headers' => $request->headers->all()
             ]);
 
+            // Return 200 untuk Midtrans agar tidak retry terus
             return response()->json([
-                'status' => 'error',
-                'message' => 'Webhook processing failed'
-            ], 500);
+                'status' => 'error', 
+                'message' => 'Webhook processing failed: ' . $e->getMessage()
+            ], 200);
         }
     }
 
