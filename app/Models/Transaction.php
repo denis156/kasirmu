@@ -68,4 +68,118 @@ class Transaction extends Model
 
         return $prefix . '-' . $date . '-' . $newNumber;
     }
+
+    /**
+     * Get available payment methods
+     */
+    public static function getPaymentMethods(): array
+    {
+        return [
+            'tunai' => 'Tunai',
+            'kartu' => 'Kartu Kredit/Debit',
+            'transfer' => 'Virtual Account',
+            'qris' => 'QRIS & E-Wallet',
+            'ewallet' => 'E-Wallet Lengkap',
+            'semua' => 'Semua Metode Digital',
+            'gopay' => 'GoPay',
+            'shopeepay' => 'ShopeePay',
+            'dana' => 'DANA',
+            'ovo' => 'OVO',
+            'linkaja' => 'LinkAja'
+        ];
+    }
+
+    /**
+     * Get available statuses
+     */
+    public static function getStatuses(): array
+    {
+        return [
+            'menunggu' => 'Menunggu',
+            'selesai' => 'Selesai',
+            'dibatalkan' => 'Dibatalkan'
+        ];
+    }
+
+    /**
+     * Check if payment method is valid
+     */
+    public static function isValidPaymentMethod(string $method): bool
+    {
+        return array_key_exists($method, self::getPaymentMethods());
+    }
+
+    /**
+     * Check if status is valid
+     */
+    public static function isValidStatus(string $status): bool
+    {
+        return array_key_exists($status, self::getStatuses());
+    }
+
+    /**
+     * Get payment method badge class
+     */
+    public static function getPaymentMethodBadgeClass(string $method): string
+    {
+        return match ($method) {
+            'tunai' => 'badge-success',
+            'kartu' => 'badge-info',
+            'transfer' => 'badge-warning',
+            'qris' => 'badge-primary',
+            'ewallet' => 'badge-accent',
+            'semua' => 'badge-secondary',
+            'gopay' => 'badge-success',
+            'shopeepay' => 'badge-warning',
+            'dana' => 'badge-info',
+            'ovo' => 'badge-accent',
+            'linkaja' => 'badge-error',
+            default => 'badge-neutral',
+        };
+    }
+
+    /**
+     * Get status badge class
+     */
+    public static function getStatusBadgeClass(string $status): string
+    {
+        return match ($status) {
+            'selesai' => 'badge-success',
+            'menunggu' => 'badge-warning',
+            'dibatalkan' => 'badge-error',
+            default => 'badge-neutral',
+        };
+    }
+
+    /**
+     * Get payment method label
+     */
+    public function getPaymentMethodLabelAttribute(): string
+    {
+        return self::getPaymentMethods()[$this->payment_method] ?? ucfirst($this->payment_method);
+    }
+
+    /**
+     * Get status label
+     */
+    public function getStatusLabelAttribute(): string
+    {
+        return self::getStatuses()[$this->status] ?? ucfirst($this->status);
+    }
+
+    /**
+     * Get payment method badge class for instance
+     */
+    public function getPaymentMethodBadgeClassAttribute(): string
+    {
+        return self::getPaymentMethodBadgeClass($this->payment_method);
+    }
+
+    /**
+     * Get status badge class for instance
+     */
+    public function getStatusBadgeClassAttribute(): string
+    {
+        return self::getStatusBadgeClass($this->status);
+    }
 }
